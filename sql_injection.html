@@ -14,12 +14,15 @@
             font-family: 'Courier New', monospace;
             background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
             color: #00ff00;
-            min-height: 100vh;
+            min-height: 100vh; /* Asegura que el body ocupe al menos toda la altura de la ventana */
+            display: flex; /* Para usar flexbox para el footer */
+            flex-direction: column; /* Para apilar el contenido y el footer */
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            flex-grow: 1; /* Permite que el container crezca y empuje el footer hacia abajo */
         }
         .header {
             text-align: center;
@@ -173,12 +176,29 @@
 
         /* Styles for the new modal (testing room) */
         #openTestRoomBtn {
-            margin-top: 20px;
-            background-color: #00ffff; /* A distinctive color for the new button */
-            color: #000;
+            margin-top: 40px; /* Más espacio arriba */
+            background-color: #00ff00; /* Verde brillante */
+            color: #000; /* Texto negro */
+            font-size: 1.8em; /* Más grande */
+            padding: 15px 30px; /* Más padding */
+            border: 3px solid #00ff00; /* Borde sólido */
+            border-radius: 8px; /* Bordes ligeramente redondeados */
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase; /* Mayúsculas */
+            letter-spacing: 2px; /* Espaciado entre letras */
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; /* Efecto de neón */
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), 0 0 25px rgba(0, 255, 0, 0.3); /* Resplandor */
+            transition: all 0.3s ease-in-out; /* Transición suave */
+            display: block; /* Ocupa su propia línea */
+            margin-left: auto;
+            margin-right: auto; /* Centrar el botón */
+            max-width: 400px; /* Limitar el ancho */
         }
         #openTestRoomBtn:hover {
-            background-color: #00aaaa;
+            background-color: #00cc00; /* Verde un poco más oscuro al pasar el ratón */
+            transform: scale(1.05); /* Ligeramente más grande */
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7), 0 0 30px rgba(0, 255, 0, 0.5); /* Más resplandor */
         }
 
         .modal {
@@ -200,7 +220,7 @@
             padding: 30px;
             border: 2px solid #00ff00;
             width: 80%; /* Could be more or less, depending on screen size */
-            max-width: 800px; /* Slightly wider for multiple examples */
+            max-width: 900px; /* Slightly wider for more examples */
             border-radius: 8px;
             position: relative;
             box-shadow: 0 0 20px #00ff00;
@@ -218,6 +238,16 @@
             border-bottom: 1px solid #00ffff;
             padding-bottom: 5px;
         }
+        .modal-content .lab-section ul {
+            list-style-type: disc; /* Vuelven las viñetas en las pistas */
+            margin-left: 20px;
+        }
+        .modal-content .lab-section ul li {
+            background: none; /* Sin fondo específico */
+            border-left: none; /* Sin borde */
+            padding: 5px 0; /* Espacio vertical */
+            margin-bottom: 5px;
+        }
 
         .close-button {
             color: #00ff00;
@@ -234,6 +264,25 @@
             color: #00cccc;
             text-decoration: none;
             cursor: pointer;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            text-align: center;
+            padding: 15px 20px;
+            border-top: 1px solid #00ff00;
+            margin-top: auto; /* Empuja el footer al final */
+        }
+        .footer a {
+            color: #00ffff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer a:hover {
+            color: #00cccc;
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -350,17 +399,17 @@
             </div>
         </div>
 
-        <button id="openTestRoomBtn" onclick="openTestRoom()">🌐 Abrir Sala de Pruebas Interactiva</button>
+        <button id="openTestRoomBtn" onclick="openTestRoom()">🎮 ENTRAR AL CYBERLAB 👾</button>
     </div>
 
     <div id="interactiveTestRoomModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeTestRoom()">&times;</span>
             <h3>🧪 Sala de Pruebas SQL Interactiva</h3>
-            <p>Aquí puedes experimentar con diferentes payloads de SQL Injection de forma más libre.</p>
+            <p>Aquí puedes experimentar con diferentes payloads de SQL Injection de forma más libre y progresiva.</p>
 
             <div class="lab-section">
-                <h4>Simulador de Consulta Directa (Bypass Básico)</h4>
+                <h4>Nivel Básico: Bypass Simple</h4>
                 <div class="vulnerability-info">
                     <strong>Nota:</strong> Esta sala simula una consulta SQL básica donde puedes inyectar directamente en el valor de un ID.
                 </div>
@@ -377,14 +426,41 @@
 
                 <div class="results" id="test-room-result-basic"></div>
                 <div class="vulnerability-info">
-                    <strong>Pista:</strong> Usa el carácter de comilla simple (<code>'</code>) para cerrar la cadena y añade tu propia condición.
+                    <strong>Pista:</strong> Usa el carácter de comilla simple (<code>'</code>) para cerrar la cadena y añade tu propia condición lógica.
                 </div>
             </div>
 
             <div class="lab-section">
-                <h4>Simulador de Inyección UNION-Based (Avanzado)</h4>
+                <h4>Nivel Intermedio: Inyección Ciega Basada en Tiempo (Time-Based Blind)</h4>
                 <div class="vulnerability-info">
-                    <strong>Objetivo:</strong> Descubrir y extraer información de otra tabla usando <code>UNION SELECT</code>.
+                    <strong>Objetivo:</strong> Determinar si un usuario específico existe observando el tiempo de respuesta.
+                </div>
+                <form onsubmit="event.preventDefault(); runTestRoomQueryTimeBased();">
+                    <label for="testQueryInputTimeBased">Entrada de Usuario (condición):</label>
+                    <input type="text" id="testQueryInputTimeBased" placeholder="Ej: 1' AND IF(1=1, SLEEP(3), 0) --">
+                    <button type="submit">Ejecutar Simulación</button>
+                </form>
+
+                <div class="code-block">
+                    <strong>Consulta SQL Base Simulada:</strong><br>
+                    <code>SELECT COUNT(*) FROM users WHERE id='<span id="test-query-display-timebased"></span>'</code>
+                </div>
+
+                <div class="results" id="test-room-result-timebased"></div>
+                <div class="vulnerability-info">
+                    <strong>Pista:</strong>
+                    <ul>
+                        <li>La función <code>SLEEP(N)</code> (MySQL) o <code>WAITFOR DELAY '0:0:N'</code> (SQL Server) introduce un retraso.</li>
+                        <li>Observa si hay un retraso en la respuesta al ejecutar tu payload.</li>
+                        <li>Ejemplo para MySQL: <code>1' AND IF(user()='root@localhost', SLEEP(5), 0) --</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="lab-section">
+                <h4>Nivel Avanzado: Inyección UNION-Based</h4>
+                <div class="vulnerability-info">
+                    <strong>Objetivo:</strong> Descubrir y extraer información de la base de datos usando <code>UNION SELECT</code>.
                 </div>
                 <form onsubmit="event.preventDefault(); runTestRoomQueryUnion();">
                     <label for="testQueryInputUnion">Entrada de Usuario para Simulación (ID):</label>
@@ -402,7 +478,7 @@
                     <strong>Pista Avanzada:</strong>
                     <ul>
                         <li>La consulta original devuelve 3 columnas: ID, Nombre, Descripción.</li>
-                        <li>Usa un ID negativo para que la primera parte de la consulta no devuelva resultados.</li>
+                        <li>Usa un ID negativo (ej. <code>-1</code>) para que la primera parte de la consulta no devuelva resultados.</li>
                         <li>Alinea el número de columnas con <code>UNION SELECT null, 'tu_dato', null --</code>. Puedes usar funciones como <code>database()</code> o <code>user()</code> para ver información de la DB.</li>
                     </ul>
                 </div>
@@ -410,8 +486,9 @@
 
         </div>
     </div>
+
     <footer class="footer">
-        <p>Laboratorio de SQL Injection. Desarrollado por EJ.</p>
+        <p>Laboratorio de SQL Injection. Desarrollado por un entusiasta de la seguridad.</p>
         <p>Visita mi GitHub: <a href="https://github.com/ever186" target="_blank">github.com/ever186</a></p>
     </footer>
 
@@ -514,6 +591,53 @@
                 testResult.style.borderColor = '#00ffff';
             }
         }
+
+        // NEW FUNCTION: Interactive Test Room Query Simulation (Time-Based Blind)
+        async function runTestRoomQueryTimeBased() {
+            const testInput = document.getElementById('testQueryInputTimeBased').value;
+            const testResult = document.getElementById('test-room-result-timebased');
+            document.getElementById('test-query-display-timebased').textContent = escapeHtml(testInput); // Escape for display
+
+            testResult.innerHTML = '⏳ Ejecutando simulación de consulta... Espera el resultado.';
+            testResult.style.borderColor = '#00ffff';
+
+            const startTime = performance.now();
+
+            // Simulate a time-based delay if a specific payload is detected
+            const sleepRegex = /(sleep\((\d+)\))|(waitfor delay '0:0:(\d+)')/i;
+            const match = testInput.match(sleepRegex);
+            let simulatedDelay = 0;
+
+            if (match) {
+                if (match[2]) { // For SLEEP(N)
+                    simulatedDelay = parseInt(match[2]) * 1000;
+                } else if (match[3]) { // For WAITFOR DELAY '0:0:N'
+                    simulatedDelay = parseInt(match[3]) * 1000;
+                }
+
+                // Simulate the condition. For simplicity, any non-empty input with sleep/waitfor will "succeed"
+                // In a real lab, you'd check a specific condition, e.g., "admin' AND IF(password = '...', SLEEP(5), 0) --"
+                if (testInput.includes("'") && simulatedDelay > 0) {
+                    await new Promise(resolve => setTimeout(resolve, simulatedDelay));
+                    const endTime = performance.now();
+                    const actualTime = (endTime - startTime) / 1000; // Convert to seconds
+
+                    testResult.innerHTML = `🎉 <strong style="color: #00ff00;">INYECCIÓN CIEGA BASADA EN TIEMPO EXITOSA!</strong><br>La consulta tardó ${actualTime.toFixed(2)} segundos.<br>Se detectó un retraso significativo, indicando que tu condición fue verdadera.<br>Consulta efectiva: <code>SELECT COUNT(*) FROM users WHERE id=\'' + escapeHtml(testInput) + '\'</code>`;
+                    testResult.style.borderColor = '#00ff00';
+                    return;
+                }
+            }
+            
+            // If no specific time-based payload or condition not met
+            if (testInput.includes("'")) {
+                testResult.innerHTML = '❌ <strong style="color: #ff0000;">ERROR DE SINTAXIS / NO SE DETECTÓ RETRASO:</strong><br>La consulta simulada no terminó correctamente o no se observó el retraso esperado.<br>Asegúrate de cerrar la comilla y usar <code>--</code> o <code>#</code> para comentar.<br>Consulta efectiva: <code>SELECT COUNT(*) FROM users WHERE id=\'' + escapeHtml(testInput) + '\'</code>';
+                testResult.style.borderColor = '#ff0000';
+            } else {
+                testResult.innerHTML = 'ℹ️ Consulta simulada ejecutada sin inyección activa. Tiempo de respuesta: ${(performance.now() - startTime).toFixed(2)} ms.<br><code>SELECT COUNT(*) FROM users WHERE id=\'' + escapeHtml(testInput) + '\'</code>';
+                testResult.style.borderColor = '#00ffff';
+            }
+        }
+
 
         // NEW FUNCTION: Interactive Test Room Query Simulation (UNION-Based)
         function runTestRoomQueryUnion() {
