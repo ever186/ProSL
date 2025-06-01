@@ -42,35 +42,71 @@
             text-align: center;
             font-weight: bold;
         }
-        .nav-menu {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
         }
-        .nav-menu a {
-            color: #000; 
-            background: #00ff00; 
+        .concept-card {
+            background: rgba(0, 50, 0, 0.3);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
             text-decoration: none;
-            padding: 12px 25px; 
-            border: 1px solid #00ff00; 
-            border-radius: 5px; 
+            color: inherit;
+            display: block;
+        }
+        .concept-card:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.3);
+        }
+        .concept-card h3 {
+            color: #00ffff;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .concept-card .icon {
+            font-size: 1.5em;
+        }
+        .concept-card .description {
+            color: #ccffcc;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .concept-card .difficulty {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
             font-weight: bold;
-            transition: all 0.3s;
-            min-width: 220px; /* Ancho mínimo para los botones */
-            text-align: center;
+            margin-bottom: 10px;
         }
-        .nav-menu a:hover {
-            background: #00cccc; 
-            border-color: #00cccc;
-            transform: scale(1.05);
-            color: #000;
+        .difficulty.beginner {
+            background: #28a745;
+            color: white;
         }
-        .lab-section { /* Usado para la sección de Recursos */
+        .difficulty.intermediate {
+            background: #ffc107;
+            color: black;
+        }
+        .difficulty.advanced {
+            background: #dc3545;
+            color: white;
+        }
+        .concept-card .techniques {
+            color: #ffff00;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        .lab-section {
             background: rgba(0, 50, 0, 0.3);
             border: 1px solid #00ff00;
             margin: 20px 0;
@@ -92,16 +128,46 @@
             margin-left: 20px;
             padding-left: 10px;
         }
-        .vulnerability-info { /* Usado para la nota de "Próximos pasos" */
+        .vulnerability-info {
             background: rgba(255, 255, 0, 0.1);
             border-left: 4px solid #ffff00;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 15px;
+            margin: 20px 0;
             color: #ffff00;
+            border-radius: 5px;
+        }
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #00ff00;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        .stat-card .number {
+            font-size: 2em;
+            color: #00ffff;
+            font-weight: bold;
+        }
+        .stat-card .label {
+            color: #ccffcc;
+            margin-top: 5px;
         }
         @keyframes hue-rotate {
             0% { filter: hue-rotate(0deg); }
             100% { filter: hue-rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
@@ -113,39 +179,110 @@
             <p><em>Entorno controlado para pruebas de penetración</em></p>
         </div>
 
-        <div class="warning">
+        <div class="warning pulse">
             ⚠️ ADVERTENCIA: Este es un entorno de práctica educativo. Las vulnerabilidades aquí implementadas son solo para fines de aprendizaje.
         </div>
 
-        <div class="nav-menu">
-            <a href="sql_injection.html">SQL Injection</a>
-            <a href="xss.html">Cross-Site Scripting (XSS)</a>
-            <a href="auth_bypass.html">Bypass de Autenticación</a>
-            <a href="file_inclusion.html">Inclusión de Archivos (LFI)</a>
-            <a href="command_injection.html">Inyección de Comandos</a>
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="number">5</div>
+                <div class="label">Vulnerabilidades</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">3</div>
+                <div class="label">Niveles de Dificultad</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">100%</div>
+                <div class="label">Práctica Segura</div>
+            </div>
+        </div>
+
+        <h2 style="color: #00ffff; text-align: center; margin: 40px 0 30px 0; font-size: 1.8em;">
+            🎯 Conceptos de Ciberseguridad
+        </h2>
+
+        <div class="concepts-grid">
+            <a href="sql_injection.html" class="concept-card">
+                <h3><span class="icon">💉</span>SQL Injection</h3>
+                <div class="difficulty beginner">Principiante</div>
+                <div class="description">
+                    Aprende a explotar vulnerabilidades en consultas de base de datos mediante la inyección de código SQL malicioso. Descubre cómo los atacantes pueden acceder, modificar o eliminar datos sensibles.
+                </div>
+                <div class="techniques">Técnicas: UNION-based, Boolean-based, Time-based</div>
+            </a>
+
+            <a href="xss.html" class="concept-card">
+                <h3><span class="icon">🚨</span>Cross-Site Scripting (XSS)</h3>
+                <div class="difficulty intermediate">Intermedio</div>
+                <div class="description">
+                    Explora cómo inyectar código JavaScript malicioso en aplicaciones web para robar cookies, sesiones o ejecutar acciones en nombre de otros usuarios.
+                </div>
+                <div class="techniques">Técnicas: Reflected XSS, Stored XSS, DOM-based XSS</div>
+            </a>
+
+            <a href="auth_bypass.html" class="concept-card">
+                <h3><span class="icon">🔓</span>Bypass de Autenticación</h3>
+                <div class="difficulty intermediate">Intermedio</div>
+                <div class="description">
+                    Descubre métodos para evadir controles de acceso y autenticación deficientes. Aprende a identificar y explotar fallas en sistemas de login.
+                </div>
+                <div class="techniques">Técnicas: Credential stuffing, Session hijacking, Token manipulation</div>
+            </a>
+
+            <a href="file_inclusion.html" class="concept-card">
+                <h3><span class="icon">📁</span>Inclusión de Archivos (LFI)</h3>
+                <div class="difficulty advanced">Avanzado</div>
+                <div class="description">
+                    Practica técnicas de Local File Inclusion para acceder a archivos del sistema que no deberían ser públicos, incluyendo archivos de configuración y logs.
+                </div>
+                <div class="techniques">Técnicas: Path traversal, Null byte injection, Filter bypass</div>
+            </a>
+
+            <a href="command_injection.html" class="concept-card">
+                <h3><span class="icon">⚡</span>Inyección de Comandos</h3>
+                <div class="difficulty advanced">Avanzado</div>
+                <div class="description">
+                    Aprende a ejecutar comandos del sistema operativo a través de aplicaciones web vulnerables. Una de las técnicas más peligrosas en pentesting.
+                </div>
+                <div class="techniques">Técnicas: Command chaining, Blind injection, Time-based detection</div>
+            </a>
         </div>
 
         <div class="lab-section">
-            <h2>📚 Recursos de Aprendizaje</h2>
-            <p><strong>Técnicas practicadas en este laboratorio:</strong></p>
+            <h2>🛠️ Herramientas Recomendadas</h2>
+            <p><strong>Para maximizar tu aprendizaje, utiliza estas herramientas profesionales:</strong></p>
             <ul>
-                <li>SQL Injection - Manipulación de consultas de base de datos</li>
-                <li>Cross-Site Scripting (XSS) - Inyección de código JavaScript</li>
-                <li>Authentication Bypass - Evasión de controles de acceso</li>
-                <li>Local File Inclusion (LFI) - Acceso no autorizado a archivos</li>
-                <li>Command Injection - Ejecución de comandos del sistema</li>
+                <li><strong>Burp Suite</strong> - Proxy web y suite de pruebas de seguridad</li>
+                <li><strong>OWASP ZAP</strong> - Escáner de vulnerabilidades web gratuito</li>
+                <li><strong>Metasploit</strong> - Framework de explotación y pentesting</li>
+                <li><strong>SQLmap</strong> - Herramienta automática para SQL injection</li>
+                <li><strong>Nikto</strong> - Escáner de vulnerabilidades web</li>
+                <li><strong>Gobuster</strong> - Enumeración de directorios y archivos</li>
             </ul>
 
             <div class="vulnerability-info">
-                <strong>Próximos pasos:</strong> Practica con herramientas como Burp Suite, OWASP ZAP, y Metasploit para técnicas más avanzadas.
+                <strong>💡 Consejo de Seguridad:</strong> Siempre practica estas técnicas solo en entornos controlados y con autorización explícita. El uso no autorizado de estas técnicas es ilegal y puede tener consecuencias legales graves.
             </div>
+        </div>
+
+        <div class="lab-section">
+            <h2>📈 Progreso de Aprendizaje</h2>
+            <p><strong>Ruta recomendada para principiantes:</strong></p>
+            <ol style="color: #ccffcc; line-height: 1.8; margin-left: 20px;">
+                <li>Comienza con <strong>SQL Injection</strong> para entender conceptos básicos</li>
+                <li>Continúa con <strong>Cross-Site Scripting (XSS)</strong> para aprender sobre client-side attacks</li>
+                <li>Practica <strong>Bypass de Autenticación</strong> para entender fallas de acceso</li>
+                <li>Avanza a <strong>Inclusión de Archivos (LFI)</strong> para técnicas más complejas</li>
+                <li>Finaliza con <strong>Inyección de Comandos</strong> para el máximo nivel</li>
+            </ol>
         </div>
     </div>
 
     <script>
         // Easter egg - Konami code
         let konamiCode = [];
-        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Arriba, Arriba, Abajo, Abajo, Izquierda, Derecha, Izquierda, Derecha, B, A
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
 
         document.addEventListener('keydown', function(e) {
             konamiCode.push(e.keyCode);
@@ -154,28 +291,45 @@
             }
 
             if (konamiCode.toString() === konamiSequence.toString()) {
-                // No usamos alert() para evitar problemas en iframes.
-                // Podrías implementar un modal personalizado aquí.
                 console.log('🎮 Easter Egg Found! You discovered the Konami Code!');
                 const eggMessage = document.createElement('div');
-                eggMessage.textContent = '🎮 Konami Code Activated! 🎮';
-                eggMessage.style.position = 'fixed';
-                eggMessage.style.top = '50%';
-                eggMessage.style.left = '50%';
-                eggMessage.style.transform = 'translate(-50%, -50%)';
-                eggMessage.style.padding = '20px';
-                eggMessage.style.background = '#00ff00';
-                eggMessage.style.color = '#000';
-                eggMessage.style.border = '2px solid #000';
-                eggMessage.style.borderRadius = '10px';
-                eggMessage.style.zIndex = '1000';
-                eggMessage.style.boxShadow = '0 0 20px #00ff00';
+                eggMessage.innerHTML = '🎮 Konami Code Activated! 🎮<br><small>¡Eres un verdadero hacker!</small>';
+                eggMessage.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    padding: 30px;
+                    background: linear-gradient(45deg, #00ff00, #00ffff);
+                    color: #000;
+                    border: 3px solid #000;
+                    border-radius: 15px;
+                    z-index: 1000;
+                    box-shadow: 0 0 30px #00ff00;
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 1.2em;
+                `;
                 document.body.appendChild(eggMessage);
                 setTimeout(() => {
                     eggMessage.remove();
-                }, 3000);
-                document.body.style.animation = 'hue-rotate 2s infinite linear';
+                }, 4000);
+                document.body.style.animation = 'hue-rotate 3s infinite linear';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 6000);
             }
+        });
+
+        // Efecto de hover mejorado para las tarjetas
+        document.querySelectorAll('.concept-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 15px 30px rgba(0, 255, 255, 0.4)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '';
+            });
         });
     </script>
 </body>
