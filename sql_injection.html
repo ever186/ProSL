@@ -170,6 +170,71 @@
             0% { filter: hue-rotate(0deg); }
             100% { filter: hue-rotate(360deg); }
         }
+
+        /* Styles for the new modal (testing room) */
+        #openTestRoomBtn {
+            margin-top: 20px;
+            background-color: #00ffff; /* A distinctive color for the new button */
+            color: #000;
+        }
+        #openTestRoomBtn:hover {
+            background-color: #00aaaa;
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 30px;
+            border: 2px solid #00ff00;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 800px; /* Slightly wider for multiple examples */
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 0 20px #00ff00;
+        }
+        .modal-content .lab-section { /* Styles for sections inside the modal */
+            background: rgba(0, 50, 0, 0.2);
+            border: 1px solid #00cc00;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .modal-content .lab-section h4 {
+            color: #00ffff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #00ffff;
+            padding-bottom: 5px;
+        }
+
+        .close-button {
+            color: #00ff00;
+            font-size: 35px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #00cccc;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -232,9 +297,9 @@
         </div>
 
         <div class="lab-section" id="sql-injection-lab">
-            <h3>🎯 Laboratorio Práctico: SQL Injection</h3>
+            <h3>🎯 Laboratorio Práctico: SQL Injection (Login Bypass)</h3>
             <div class="vulnerability-info">
-                <strong>Vulnerabilidad:</strong> La consulta SQL no está sanitizada, permitiendo inyección de código malicioso.
+                <strong>Vulnerabilidad:</strong> La consulta SQL no está sanitizada, permitiendo inyección de código malicioso para eludir la autenticación.
             </div>
 
             <form onsubmit="event.preventDefault(); checkLogin();">
@@ -258,23 +323,108 @@
                 <strong>Pista Principal:</strong> Prueba con: <code>admin' OR '1'='1' --</code> como usuario.
             </div>
         </div>
+
+        <div class="lab-section" id="error-based-sql-lab">
+            <h3>🔬 Laboratorio Práctico: Inyección SQL Basada en Errores</h3>
+            <div class="vulnerability-info">
+                <strong>Vulnerabilidad:</strong> La aplicación muestra errores detallados de la base de datos, lo que puede ser explotado para extraer información.
+            </div>
+
+            <form onsubmit="event.preventDefault(); checkProductSearch();">
+                <h4>Búsqueda de Productos Vulnerable</h4>
+                <p>Intenta causar un error SQL para revelar información.</p>
+                <label for="product_id">ID de Producto:</label>
+                <input type="text" id="product_id" placeholder="Ej: 1 o 1' AND 1=BENCHMARK(5000000,MD5(1)) --">
+                <button type="submit">Buscar Producto</button>
+            </form>
+
+            <div class="code-block">
+                <strong>Consulta SQL simulada que se ejecutaría:</strong><br>
+                SELECT name, description FROM products WHERE id='<span id="product-id-display"></span>'
+            </div>
+
+            <div class="results" id="product-search-result"></div>
+
+            <div class="vulnerability-info">
+                <strong>Pista Principal:</strong> Intenta forzar un error. Por ejemplo: <code>1' AND (SELECT 1 FROM DUAL WHERE 1=BENCHMARK(5000000,MD5(1))) --</code> (MySQL) o un simple <code>'</code> para romper la sintaxis.
+            </div>
+        </div>
+
+        <button id="openTestRoomBtn" onclick="openTestRoom()">🌐 Abrir Sala de Pruebas Interactiva</button>
+    </div>
+
+    <div id="interactiveTestRoomModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeTestRoom()">&times;</span>
+            <h3>🧪 Sala de Pruebas SQL Interactiva</h3>
+            <p>Aquí puedes experimentar con diferentes payloads de SQL Injection de forma más libre.</p>
+
+            <div class="lab-section">
+                <h4>Simulador de Consulta Directa (Bypass Básico)</h4>
+                <div class="vulnerability-info">
+                    <strong>Nota:</strong> Esta sala simula una consulta SQL básica donde puedes inyectar directamente en el valor de un ID.
+                </div>
+                <form onsubmit="event.preventDefault(); runTestRoomQueryBasic();">
+                    <label for="testQueryInputBasic">Entrada de Usuario para Simulación (ID):</label>
+                    <input type="text" id="testQueryInputBasic" placeholder="Ej: 1' OR '1'='1">
+                    <button type="submit">Ejecutar Simulación</button>
+                </form>
+
+                <div class="code-block">
+                    <strong>Consulta SQL Base Simulada:</strong><br>
+                    <code>SELECT * FROM data WHERE id='<span id="test-query-display-basic"></span>'</code>
+                </div>
+
+                <div class="results" id="test-room-result-basic"></div>
+                <div class="vulnerability-info">
+                    <strong>Pista:</strong> Usa el carácter de comilla simple (<code>'</code>) para cerrar la cadena y añade tu propia condición.
+                </div>
+            </div>
+
+            <div class="lab-section">
+                <h4>Simulador de Inyección UNION-Based (Avanzado)</h4>
+                <div class="vulnerability-info">
+                    <strong>Objetivo:</strong> Descubrir y extraer información de otra tabla usando <code>UNION SELECT</code>.
+                </div>
+                <form onsubmit="event.preventDefault(); runTestRoomQueryUnion();">
+                    <label for="testQueryInputUnion">Entrada de Usuario para Simulación (ID):</label>
+                    <input type="text" id="testQueryInputUnion" placeholder="Ej: -1' UNION SELECT 1,database(),user() --">
+                    <button type="submit">Ejecutar Simulación</button>
+                </form>
+
+                <div class="code-block">
+                    <strong>Consulta SQL Base Simulada:</strong><br>
+                    <code>SELECT id, name, description FROM products WHERE id='<span id="test-query-display-union"></span>'</code>
+                </div>
+
+                <div class="results" id="test-room-result-union"></div>
+                <div class="vulnerability-info">
+                    <strong>Pista Avanzada:</strong>
+                    <ul>
+                        <li>La consulta original devuelve 3 columnas: ID, Nombre, Descripción.</li>
+                        <li>Usa un ID negativo para que la primera parte de la consulta no devuelva resultados.</li>
+                        <li>Alinea el número de columnas con <code>UNION SELECT null, 'tu_dato', null --</code>. Puedes usar funciones como <code>database()</code> o <code>user()</code> para ver información de la DB.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
+        // Existing functions (from original file)
         function checkLogin() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
             // Mostrar la entrada del usuario en la consulta simulada
-            // Escapamos HTML básico para evitar que la propia demo sea vulnerable a XSS aquí.
-            document.getElementById('user-display').textContent = username;
-            document.getElementById('pass-display').textContent = password;
+            document.getElementById('user-display').textContent = escapeHtml(username);
+            document.getElementById('pass-display').textContent = escapeHtml(password);
 
             const result = document.getElementById('login-result');
 
             // Simulación de la vulnerabilidad de SQL Injection
-            // Esta es una simulación MUY simplificada.
-            if (username.toLowerCase().includes("' or '") || 
+            if (username.toLowerCase().includes("' or '") ||
                 (username.includes("'") && username.includes("--")) ||
                 (username.includes("'") && username.includes("#")) ||
                 (username.toLowerCase().includes("or 1=1")) ||
@@ -291,6 +441,104 @@
             }
         }
 
+        // NEW LAB FUNCTION: Error-Based SQL Injection Simulation
+        function checkProductSearch() {
+            const productId = document.getElementById('product_id').value;
+            const result = document.getElementById('product-search-result');
+            document.getElementById('product-id-display').textContent = escapeHtml(productId); // Escape for display
+
+            // Simulate various error-based payloads
+            // This is a simplified simulation for demonstration purposes.
+            if (productId.includes("'") && (productId.toLowerCase().includes("union select") || productId.toLowerCase().includes("and benchmark") || productId.toLowerCase().includes("extractvalue") || productId.toLowerCase().includes("updatexml"))) {
+                result.innerHTML = '⚠️ <strong style="color: #ffff00;">ERROR DE BASE DE DATOS (SIMULADO):</strong><br>Sintaxis SQL incorrecta cerca de: <code>' + escapeHtml(productId) + '</code><br>Este tipo de errores detallados pueden ser explotados para enumerar información de la base de datos (por ejemplo, versiones, tablas, etc.).<br>Se ha detectado una inyección de error potencial.';
+                result.style.borderColor = '#ffff00';
+            } else if (productId.includes("'") && !productId.toLowerCase().includes("union select")) {
+                 result.innerHTML = '❌ <strong style="color: #ff0000;">ERROR DE SINTAXIS SIMULADO:</strong><br>La cadena no terminada correctamente. Esto es un indicio de una posible inyección SQL.';
+                 result.style.borderColor = '#ff0000';
+            }
+            else if (productId === '1') {
+                result.innerHTML = '✅ Producto encontrado: "Laptop Gaming". Descripción: "Potente laptop para juegos con gráficos RTX y procesador i9."';
+                result.style.borderColor = '#00ff00';
+            } else if (productId === '2') {
+                 result.innerHTML = '✅ Producto encontrado: "Teclado Mecánico". Descripción: "Teclado RGB con switches Cherry MX."';
+                 result.style.borderColor = '#00ff00';
+            }
+            else {
+                result.innerHTML = 'ℹ️ No se encontró el producto o no hay inyección activa.';
+                result.style.borderColor = '#00ffff';
+            }
+        }
+
+        // MODAL FUNCTIONS for Interactive Test Room
+        const modal = document.getElementById('interactiveTestRoomModal');
+
+        function openTestRoom() {
+            modal.style.display = "block";
+        }
+
+        function closeTestRoom() {
+            modal.style.display = "none";
+        }
+
+        // Close modal if user clicks outside of it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeTestRoom();
+            }
+        }
+
+        // NEW FUNCTION: Interactive Test Room Query Simulation (Basic Bypass)
+        function runTestRoomQueryBasic() {
+            const testInput = document.getElementById('testQueryInputBasic').value;
+            const testResult = document.getElementById('test-room-result-basic');
+            document.getElementById('test-query-display-basic').textContent = escapeHtml(testInput); // Escape for display
+
+            // More generic simulation for the test room
+            if (testInput.toLowerCase().includes("' or '") ||
+                testInput.toLowerCase().includes("or 1=1") ||
+                testInput.toLowerCase().includes("or '1'='1") ||
+                (testInput.includes("'") && (testInput.includes("--") || testInput.includes("#")))
+                ) {
+                testResult.innerHTML = '🎉 <strong style="color: #00ff00;">INYECCIÓN DETECTADA en Sala de Pruebas (Básico)!</strong><br>La consulta simulada ha sido manipulada. Esto indica una vulnerabilidad de Inyección SQL.<br>Consulta efectiva: <code>SELECT * FROM data WHERE id=\'' + escapeHtml(testInput) + '\'</code>';
+                testResult.style.borderColor = '#00ff00';
+            } else if (testInput.includes("'")) {
+                testResult.innerHTML = '❌ <strong style="color: #ff0000;">ERROR DE SINTAXIS SIMULADO:</strong><br>Hay un error de sintaxis en su entrada. Esto puede ser el primer paso para encontrar una inyección SQL.';
+                testResult.style.borderColor = '#ff0000';
+            }
+            else {
+                testResult.innerHTML = 'ℹ️ Consulta simulada ejecutada sin inyección activa: <code>SELECT * FROM data WHERE id=\'' + escapeHtml(testInput) + '\'</code>';
+                testResult.style.borderColor = '#00ffff';
+            }
+        }
+
+        // NEW FUNCTION: Interactive Test Room Query Simulation (UNION-Based)
+        function runTestRoomQueryUnion() {
+            const testInput = document.getElementById('testQueryInputUnion').value;
+            const testResult = document.getElementById('test-room-result-union');
+            document.getElementById('test-query-display-union').textContent = escapeHtml(testInput); // Escape for display
+
+            // Simulate UNION-based injection
+            if (testInput.toLowerCase().includes("union select")) {
+                const unionPart = testInput.toLowerCase().split("union select")[1];
+                const parts = unionPart.split(',');
+                if (parts.length === 3) { // Expecting 3 columns for this specific example
+                    testResult.innerHTML = '🎉 <strong style="color: #00ff00;">INYECCIÓN UNION-BASED EXITOSA!</strong><br>¡Has manipulado la consulta para extraer información!<br>Datos extraídos (simulado):<br>Columna 1: ' + escapeHtml(parts[0].trim()) + '<br>Columna 2: <strong style="color: #ffff00;">' + escapeHtml(parts[1].trim()) + '</strong><br>Columna 3: ' + escapeHtml(parts[2].trim()) + '<br><br>Consulta efectiva: <code>SELECT id, name, description FROM products WHERE id=\'' + escapeHtml(testInput) + '\'</code>';
+                    testResult.style.borderColor = '#00ff00';
+                } else {
+                    testResult.innerHTML = '⚠️ <strong style="color: #ffff00;">INYECCIÓN UNION-BASED (POSIBLE):</strong><br>Detectado <code>UNION SELECT</code>, pero el número de columnas no coincide o la sintaxis es incorrecta.<br>La consulta original espera 3 columnas. Intentaste: ' + parts.length + ' columnas.<br>Consulta simulada: <code>SELECT id, name, description FROM products WHERE id=\'' + escapeHtml(testInput) + '\'</code>';
+                    testResult.style.borderColor = '#ffff00';
+                }
+            } else if (testInput.includes("'")) {
+                testResult.innerHTML = '❌ <strong style="color: #ff0000;">ERROR DE SINTAXIS SIMULADO:</strong><br>Hay un error de sintaxis en su entrada. Asegúrate de cerrar la comilla y usar <code>--</code> o <code>#</code> para comentar.';
+                testResult.style.borderColor = '#ff0000';
+            }
+            else {
+                testResult.innerHTML = 'ℹ️ Consulta simulada ejecutada sin inyección activa: <code>SELECT id, name, description FROM products WHERE id=\'' + escapeHtml(testInput) + '\'</code>';
+                testResult.style.borderColor = '#00ffff';
+            }
+        }
+
+        // Helper function to escape HTML for display purposes
         function escapeHtml(unsafe) {
             if (typeof unsafe !== 'string') return '';
             return unsafe
