@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureLab - SQL Injection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: #00ff00;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        .header h1 {
+            font-size: 2.2em; /* Un poco más pequeño para páginas internas */
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        .back-link {
+            display: inline-block; /* Para que no ocupe todo el ancho */
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #00ff00;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s;
+            border: 1px solid #00ff00;
+        }
+        .back-link:hover {
+            background-color: #00cccc;
+            transform: scale(1.05);
+        }
+        .content-section { /* Contenedor general para concepto, cómo funciona, ejemplos */
+            margin-bottom: 20px;
+        }
+        .concept-section, .how-it-works-section, .examples-section {
+            background: rgba(0, 30, 0, 0.2);
+            border: 1px solid #00cc00;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .concept-section h2, .how-it-works-section h2, .examples-section h2 {
+            color: #00ffff;
+            border-bottom: 1px solid #00ffff;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .concept-section p, .how-it-works-section p, .examples-section p, .examples-section ul li {
+            color: #ccffcc;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+        .examples-section ul {
+            list-style-type: none; /* Sin viñetas por defecto */
+            padding-left: 0;
+        }
+        .examples-section ul li {
+            background: rgba(0, 50, 0, 0.4);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #00ff00;
+        }
+        .examples-section strong { /* Para el título del ejemplo */
+            color: #ffff00;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        .examples-section em { /* Para la pista */
+            color: #00ff00;
+            font-style: normal;
+        }
+        .examples-section code {
+            background-color: #000;
+            color: #00ff00;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .lab-section {
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid #00ff00;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .lab-section h3 { /* Título dentro del lab práctico */
+            color: #00ffff;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 5px;
+            font-size: 1.5em;
+        }
+        input, textarea, select {
+            background: #1a1a2e;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            margin: 5px 0; /* Ajustado margen */
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            width: 100%; /* Ocupar ancho disponible */
+            max-width: 300px; /* Máximo ancho */
+            display: block; /* Para que width funcione bien */
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px; /* Espacio arriba */
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #00cccc;
+            transform: scale(1.05);
+        }
+        .vulnerability-info {
+            background: rgba(255, 255, 0, 0.1);
+            border-left: 4px solid #ffff00;
+            padding: 10px;
+            margin: 15px 0;
+            color: #ffff00;
+        }
+        .code-block {
+            background: #000;
+            border: 1px solid #333;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            color: #00ff00; /* Asegurar color de texto */
+        }
+        .results {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            min-height: 50px;
+            word-wrap: break-word; /* Para que el texto largo no rompa el layout */
+        }
+        @keyframes hue-rotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Laboratorio: SQL Injection</h1>
+        </div>
+
+        <a href="index.html" class="back-link">🏠 Volver al Inicio</a>
+
+        <div class="content-section">
+            <div class="concept-section">
+                <h2>¿Qué es SQL Injection?</h2>
+                <p>
+                    La Inyección SQL (SQLi) es una vulnerabilidad de seguridad web que permite a un atacante interferir con las consultas que una aplicación hace a su base de datos. Generalmente permite a un atacante ver datos que normalmente no podría recuperar. Esto podría incluir datos pertenecientes a otros usuarios, o cualquier otro dato al que la propia aplicación pueda acceder. En muchos casos, un atacante puede modificar o eliminar estos datos, causando cambios persistentes en el contenido o comportamiento de la aplicación.
+                </p>
+            </div>
+
+            <div class="how-it-works-section">
+                <h2>¿Cómo funciona en este laboratorio?</h2>
+                <p>
+                    En este laboratorio, el formulario de inicio de sesión construye una consulta SQL concatenando directamente la entrada del usuario (nombre de usuario y contraseña) en la cadena de consulta. Si ingresas un nombre de usuario o contraseña que contiene caracteres especiales de SQL, puedes cambiar la estructura de la consulta SQL original. Por ejemplo, puedes hacer que parte de tu entrada sea interpretada como un comando SQL en lugar de solo datos, permitiéndote eludir la verificación de la contraseña.
+                </p>
+                <p>La consulta vulnerable simulada es: <code>SELECT * FROM users WHERE username='INPUT_USUARIO' AND password='INPUT_PASSWORD'</code></p>
+            </div>
+
+            <div class="examples-section">
+                <h2>Ejemplos Prácticos de SQL Injection</h2>
+                <ul>
+                    <li>
+                        <strong>Ejemplo 1: Bypass Clásico</strong>
+                        <p>Entrada de Usuario (en el campo de usuario): <code>admin' OR '1'='1' --</code></p>
+                        <p>Contraseña: (puede dejarse en blanco o con cualquier valor)</p>
+                        <p><em>Pista:</em> El <code>--</code> (o <code>#</code> en MySQL) comenta el resto de la consulta, y <code>'1'='1'</code> siempre es verdadero, bypasseando la comprobación de contraseña.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 2: Confirmación de Usuario Existente</strong>
+                        <p>Entrada de Usuario: <code>admin' AND '1'='1</code></p>
+                        <p>Contraseña: (cualquier cosa)</p>
+                        <p><em>Pista:</em> Si el usuario 'admin' existe, la condición <code>'1'='1'</code> es verdadera y la consulta podría tener éxito si la contraseña también fuera correcta (o si la parte de la contraseña se comenta). El objetivo aquí es confirmar si 'admin' es un usuario válido.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 3: Comentario Alternativo (MySQL)</strong>
+                        <p>Entrada de Usuario: <code>admin' #</code></p>
+                        <p>Contraseña: (dejar en blanco)</p>
+                        <p><em>Pista:</em> Similar al <code>--</code>, el <code>#</code> comenta el resto de la línea en MySQL. Es crucial que no haya nada después del <code>#</code> en la misma línea de la consulta generada.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 4: Unión para Extraer Datos (Conceptual)</strong>
+                        <p>Entrada de Usuario: <code>' UNION SELECT null, version(), null -- </code> (Ajustar número de <code>null</code> según columnas)</p>
+                        <p><em>Pista:</em> Este es un ejemplo más avanzado. Si la aplicación muestra datos de la consulta y conoces el número de columnas que devuelve la consulta original, podrías usar <code>UNION SELECT</code> para extraer información como la versión de la base de datos. Este laboratorio no mostrará la versión, pero ilustra el concepto. Necesitarías que la consulta original devuelva el mismo número de columnas que tu <code>UNION SELECT</code>.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 5: Inyección Ciega Basada en Tiempo (Conceptual)</strong>
+                        <p>Entrada de Usuario: <code>admin' AND SLEEP(5) --</code> (Para MySQL/MariaDB) o <code>admin'; IF (1=1) WAITFOR DELAY '0:0:5' --</code> (Para SQL Server)</p>
+                        <p><em>Pista:</em> Si la aplicación no muestra errores ni datos, puedes inferir información observando el tiempo de respuesta. Si la condición es verdadera, la base de datos espera 5 segundos. Este laboratorio no simula el retraso, pero es una técnica común para inyecciones ciegas.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="lab-section" id="sql-injection-lab">
+            <h3>🎯 Laboratorio Práctico: SQL Injection</h3>
+            <div class="vulnerability-info">
+                <strong>Vulnerabilidad:</strong> La consulta SQL no está sanitizada, permitiendo inyección de código malicioso.
+            </div>
+
+            <form onsubmit="event.preventDefault(); checkLogin();">
+                <h4>Sistema de Login Vulnerable</h4>
+                <p>Intenta hacer login como administrador sin conocer la contraseña:</p>
+                <label for="username">Usuario:</label>
+                <input type="text" id="username" placeholder="Usuario">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" placeholder="Contraseña">
+                <button type="submit">Iniciar Sesión</button>
+            </form>
+
+            <div class="code-block">
+                <strong>Consulta SQL simulada que se ejecutaría:</strong><br>
+                SELECT * FROM users WHERE username='<span id="user-display"></span>' AND password='<span id="pass-display"></span>'
+            </div>
+
+            <div class="results" id="login-result"></div>
+
+            <div class="vulnerability-info">
+                <strong>Pista Principal:</strong> Prueba con: <code>admin' OR '1'='1' --</code> como usuario.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Mostrar la entrada del usuario en la consulta simulada
+            // Escapamos HTML básico para evitar que la propia demo sea vulnerable a XSS aquí.
+            document.getElementById('user-display').textContent = username;
+            document.getElementById('pass-display').textContent = password;
+
+            const result = document.getElementById('login-result');
+
+            // Simulación de la vulnerabilidad de SQL Injection
+            // Esta es una simulación MUY simplificada.
+            if (username.toLowerCase().includes("' or '") || 
+                (username.includes("'") && username.includes("--")) ||
+                (username.includes("'") && username.includes("#")) ||
+                (username.toLowerCase().includes("or 1=1")) ||
+                (username.toLowerCase().includes("or '1'='1"))
+                ) {
+                result.innerHTML = '🎉 <strong style="color: #00ff00;">SQL INJECTION EXITOSA!</strong><br>Has bypasseado la autenticación como administrador.<br>Consulta manipulada detectada: <code>SELECT * FROM users WHERE username=\'' + escapeHtml(username) + '\' AND password=\'' + escapeHtml(password) + '\'</code>';
+                result.style.borderColor = '#00ff00';
+            } else if (username === 'admin' && password === 'admin123') {
+                result.innerHTML = '✅ Login exitoso como administrador (credenciales válidas).';
+                result.style.borderColor = '#00ff00';
+            } else {
+                result.innerHTML = '❌ Credenciales incorrectas o intento de login fallido.';
+                result.style.borderColor = '#ff0000';
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        // Easter egg - Konami code
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            if (konamiCode.toString() === konamiSequence.toString()) {
+                console.log('🎮 Easter Egg Found! You discovered the Konami Code!');
+                const eggMessage = document.createElement('div');
+                eggMessage.textContent = '🎮 Konami Code Activated! 🎮';
+                eggMessage.style.position = 'fixed';
+                eggMessage.style.top = '50%';
+                eggMessage.style.left = '50%';
+                eggMessage.style.transform = 'translate(-50%, -50%)';
+                eggMessage.style.padding = '20px';
+                eggMessage.style.background = '#00ff00';
+                eggMessage.style.color = '#000';
+                eggMessage.style.border = '2px solid #000';
+                eggMessage.style.borderRadius = '10px';
+                eggMessage.style.zIndex = '1000';
+                eggMessage.style.boxShadow = '0 0 20px #00ff00';
+                document.body.appendChild(eggMessage);
+                setTimeout(() => {
+                    eggMessage.remove();
+                }, 3000);
+                document.body.style.animation = 'hue-rotate 2s infinite linear';
+            }
+        });
+    </script>
+</body>
+</html>

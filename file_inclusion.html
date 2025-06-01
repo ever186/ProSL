@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureLab - Inclusión de Archivos (LFI)</title>
+    <style>
+        /* Estilos CSS idénticos a sql_injection.html - Pégalos aquí */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%); color: #00ff00; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; border: 2px solid #00ff00; padding: 20px; background: rgba(0, 255, 0, 0.1); }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; text-shadow: 0 0 10px #00ff00; }
+        .back-link { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background-color: #00ff00; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s, transform 0.3s; border: 1px solid #00ff00; }
+        .back-link:hover { background-color: #00cccc; transform: scale(1.05); }
+        .content-section { margin-bottom: 20px; }
+        .concept-section, .how-it-works-section, .examples-section { background: rgba(0, 30, 0, 0.2); border: 1px solid #00cc00; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
+        .concept-section h2, .how-it-works-section h2, .examples-section h2 { color: #00ffff; border-bottom: 1px solid #00ffff; padding-bottom: 8px; margin-bottom: 15px; font-size: 1.5em; }
+        .concept-section p, .how-it-works-section p, .examples-section p, .examples-section ul li { color: #ccffcc; line-height: 1.7; margin-bottom: 10px; }
+        .examples-section ul { list-style-type: none; padding-left: 0; }
+        .examples-section ul li { background: rgba(0, 50, 0, 0.4); padding: 15px; margin-bottom: 10px; border-radius: 4px; border-left: 3px solid #00ff00; }
+        .examples-section strong { color: #ffff00; display: block; margin-bottom: 5px; font-size: 1.1em; }
+        .examples-section em { color: #00ff00; font-style: normal; }
+        .examples-section code { background-color: #000; color: #00ff00; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; display: inline-block; margin-top: 5px; margin-bottom: 5px;}
+        .lab-section { background: rgba(0, 50, 0, 0.3); border: 1px solid #00ff00; margin: 20px 0; padding: 20px; border-radius: 5px; }
+        .lab-section h3 { color: #00ffff; margin-bottom: 15px; border-bottom: 2px solid #00ffff; padding-bottom: 5px; font-size: 1.5em; }
+        select { background: #1a1a2e; border: 1px solid #00ff00; color: #00ff00; padding: 10px; margin: 5px 0; border-radius: 3px; font-family: 'Courier New', monospace; width: 100%; max-width: 450px; /* Aumentado el ancho máximo */ display: block; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; margin-top: 10px; border-radius: 3px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        button:hover { background: #00cccc; transform: scale(1.05); }
+        .vulnerability-info { background: rgba(255, 255, 0, 0.1); border-left: 4px solid #ffff00; padding: 10px; margin: 15px 0; color: #ffff00; }
+        .results { background: rgba(0, 255, 255, 0.1); border: 1px solid #00ffff; padding: 15px; margin: 10px 0; border-radius: 5px; min-height: 100px; /* Más altura para contenido de archivo */ white-space: pre-wrap; /* Para respetar saltos de línea y espacios */ overflow-x: auto; /* Scroll si es muy ancho */ word-wrap: break-word; }
+        .results.error { border-color: #ff0000; background: rgba(255,0,0,0.1); color: #ffaaaa; }
+        .results.success { border-color: #00ff00; background: rgba(0,255,0,0.1); color: #aaffaa; }
+        @keyframes hue-rotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Laboratorio: Inclusión Local de Archivos (LFI)</h1>
+        </div>
+
+        <a href="index.html" class="back-link">🏠 Volver al Inicio</a>
+
+        <div class="content-section">
+            <div class="concept-section">
+                <h2>¿Qué es la Inclusión Local de Archivos (LFI)?</h2>
+                <p>
+                    La Inclusión Local de Archivos (LFI) es una vulnerabilidad que permite a un atacante incluir archivos del servidor en la respuesta de una aplicación web. Esto sucede cuando la aplicación usa la entrada del usuario (por ejemplo, un parámetro en la URL o un valor de un formulario) para construir la ruta a un archivo que luego se incluye, lee o ejecuta. Un atacante puede manipular esta entrada para navegar por el sistema de archivos del servidor (usando técnicas como "Path Traversal" con <code>../</code>) y acceder a archivos sensibles, como archivos de configuración, código fuente, o archivos del sistema operativo (por ejemplo, <code>/etc/passwd</code> en Linux o <code>C:\Windows\win.ini</code> en Windows).
+                </p>
+            </div>
+
+            <div class="how-it-works-section">
+                <h2>¿Cómo funciona en este laboratorio?</h2>
+                <p>
+                    El "Visor de Archivos del Sistema" en este laboratorio permite seleccionar archivos de una lista desplegable. Detrás de escena (simulado), la aplicación toma el valor seleccionado (que representa una ruta de archivo) y lo usa para leer y mostrar el contenido de ese archivo. Si se proporciona una ruta que usa "Path Traversal" (como la opción de <code>etc/passwd</code> que simula <code>../../../../../etc/passwd</code>), el atacante puede intentar navegar fuera del directorio web previsto y acceder a otros archivos en el servidor a los que el proceso de la aplicación web tenga permiso de lectura. La vulnerabilidad radica en que la aplicación no valida ni sanea adecuadamente la ruta del archivo proporcionada por el usuario.
+                </p>
+            </div>
+
+            <div class="examples-section">
+                <h2>Ejemplos Prácticos de LFI</h2>
+                <ul>
+                    <li>
+                        <strong>Ejemplo 1: Path Traversal Básico (Linux)</strong>
+                        <p>Entrada (si fuera un campo de texto o parámetro URL): <code>../../../etc/passwd</code></p>
+                        <p><em>Pista:</em> El <code>../</code> sube un nivel en la estructura de directorios. La cantidad de <code>../</code> necesarios depende de cuán profundo esté el script vulnerable dentro del sistema de archivos. <code>/etc/passwd</code> contiene información de los usuarios del sistema.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 2: Path Traversal Básico (Windows)</strong>
+                        <p>Entrada: <code>../../../../boot.ini</code> (sistemas antiguos) o <code>../../../../Windows/system.ini</code></p>
+                        <p><em>Pista:</em> Similar al ejemplo de Linux, pero para archivos comunes del sistema Windows. La sensibilidad y existencia de estos archivos varía con la versión de Windows.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 3: Acceso a Archivos de Configuración de la Aplicación</strong>
+                        <p>Entrada: <code>../../config/database.php</code> o <code>../app/settings.yml</code> (la ruta exacta depende de la aplicación)</p>
+                        <p><em>Pista:</em> Los archivos de configuración a menudo contienen credenciales de bases de datos, claves API u otra información sensible que un atacante podría usar.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 4: Uso de Wrappers PHP (si LFI lleva a ejecución de código PHP)</strong>
+                        <p>Entrada: <code>php://filter/convert.base64-encode/resource=index.php</code></p>
+                        <p><em>Pista:</em> Si el archivo incluido es procesado por PHP (por ejemplo, con la función <code>include()</code> en el backend), se pueden usar wrappers como <code>php://filter</code> para leer el código fuente de archivos PHP (como <code>index.php</code>) codificado en base64, eludiendo la ejecución directa y revelando el código.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 5: LFI con Null Byte (<code>%00</code>) (Técnica antigua)</strong>
+                        <p>Entrada: <code>../../../../etc/passwd%00</code></p>
+                        <p><em>Pista:</em> En versiones antiguas de PHP y otros lenguajes, un null byte (<code>%00</code> en la URL) podía usarse para truncar cadenas. Si una aplicación añadía una extensión (ej: <code>.php</code>) al final del input del usuario (ej: <code>include($_GET['file'] . '.php');</code>), el null byte podría hacer que la extensión se ignorara: <code>../../etc/passwd%00.php</code> se trataría como <code>../../etc/passwd</code>. Esta técnica es menos efectiva en versiones modernas de PHP.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="lab-section" id="file-inclusion-lab">
+            <h3>🎯 Laboratorio Práctico: Inclusión Local de Archivos (LFI)</h3>
+            <div class="vulnerability-info">
+                <strong>Vulnerabilidad:</strong> La aplicación incluye archivos basándose en parámetros del usuario sin una validación adecuada de la ruta.
+            </div>
+
+            <h4>Visor de Archivos del Sistema (Simulado)</h4>
+            <label for="file-selector">Selecciona un archivo para "ver":</label>
+            <select id="file-selector" onchange="loadFileContent()">
+                <option value="">-- Selecciona un archivo --</option>
+                <option value="config.txt">config.txt (Configuración de la App)</option>
+                <option value="users.txt">users.txt (Lista de Usuarios de la App)</option>
+                <option value="logs/app.log">logs/app.log (Logs de la Aplicación)</option>
+                <option value="feature_flags.ini">feature_flags.ini (Banderas de Funcionalidad)</option>
+                <option value="path_traversal_etc_passwd">/etc/passwd (Simulación de Path Traversal)</option>
+            </select>
+            
+            <div class="results" id="file-content-display">
+                Selecciona un archivo para ver su contenido simulado.
+            </div>
+
+            <div class="vulnerability-info">
+                <strong>Pista Principal:</strong> Selecciona la opción <code>/etc/passwd</code> para simular un ataque de Path Traversal exitoso.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulación de contenido de archivos
+        const simulatedFiles = {
+            'config.txt': 'DB_HOST=localhost\nDB_USER=secure_user\nDB_PASS=p@$$wOrd123!\nAPI_KEY=xxxxxxxxxxxxxxx',
+            'users.txt': 'admin:U2FsdGVkX1... (hashed_password)\nuser01:U2FsdGVkX1... (hashed_password)\nguest:U2FsdGVkX1... (hashed_password)',
+            'logs/app.log': '[2024-06-01 10:00:00] INFO: Application started.\n[2024-06-01 10:01:23] WARN: Low disk space detected.\n[2024-06-01 10:05:10] INFO: User admin logged in from 192.168.1.100.\n[2024-06-01 10:15:30] ERROR: Failed to connect to external payment gateway.',
+            'feature_flags.ini': '; Banderas de funcionalidad para la aplicación\n[features]\nnewDashboard=true\nbetaAccess=false\ndarkMode=true\nexperimentalApi=false',
+            'path_traversal_etc_passwd': 
+                'root:x:0:0:root:/root:/bin/bash\n' +
+                'daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\n' +
+                'bin:x:2:2:bin:/bin:/usr/sbin/nologin\n' +
+                'sys:x:3:3:sys:/dev:/usr/sbin/nologin\n' +
+                'sync:x:4:65534:sync:/bin:/bin/sync\n' +
+                'games:x:5:60:games:/usr/games:/usr/sbin/nologin\n' +
+                'man:x:6:12:man:/var/cache/man:/usr/sbin/nologin\n' +
+                'lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin\n' +
+                'mail:x:8:8:mail:/var/mail:/usr/sbin/nologin\n' +
+                'news:x:9:9:news:/var/spool/news:/usr/sbin/nologin\n' +
+                'www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\n' +
+                'backup:x:34:34:backup:/var/backups:/usr/sbin/nologin\n' +
+                'user_app:x:1000:1000:User for App,,,:/home/user_app:/bin/bash'
+        };
+
+        function loadFileContent() {
+            const selectedFile = document.getElementById('file-selector').value;
+            const contentDisplay = document.getElementById('file-content-display');
+            
+            contentDisplay.classList.remove('error', 'success'); // Limpiar clases previas
+
+            if (selectedFile && simulatedFiles[selectedFile]) {
+                contentDisplay.textContent = simulatedFiles[selectedFile];
+                if (selectedFile === 'path_traversal_etc_passwd') {
+                    contentDisplay.innerHTML = '🎉 <strong style="color: #ff0000;">¡PATH TRAVERSAL EXITOSO (SIMULADO)!</strong><br><br>' + 
+                                               '<strong>Contenido de /etc/passwd (simulado):</strong><br><pre>' + 
+                                               escapeHtml(simulatedFiles[selectedFile]) + '</pre>';
+                    contentDisplay.classList.add('error'); // Usar clase 'error' para destacar el éxito del ataque
+                } else {
+                    contentDisplay.innerHTML = '<strong>Contenido de ' + escapeHtml(selectedFile) + ':</strong><br><pre>' + 
+                                               escapeHtml(simulatedFiles[selectedFile]) + '</pre>';
+                    contentDisplay.classList.add('success');
+                }
+            } else if (selectedFile === "") {
+                contentDisplay.textContent = 'Selecciona un archivo para ver su contenido simulado.';
+            } else {
+                contentDisplay.textContent = 'Error: Archivo no encontrado o no permitido (simulado).';
+                contentDisplay.classList.add('error');
+            }
+        }
+
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        // Easter egg - Konami code
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            if (konamiCode.toString() === konamiSequence.toString()) {
+                console.log('🎮 Easter Egg Found! You discovered the Konami Code!');
+                const eggMessage = document.createElement('div');
+                eggMessage.textContent = '🎮 Konami Code Activated! 🎮';
+                eggMessage.style.position = 'fixed';
+                eggMessage.style.top = '50%';
+                eggMessage.style.left = '50%';
+                eggMessage.style.transform = 'translate(-50%, -50%)';
+                eggMessage.style.padding = '20px';
+                eggMessage.style.background = '#00ff00';
+                eggMessage.style.color = '#000';
+                eggMessage.style.border = '2px solid #000';
+                eggMessage.style.borderRadius = '10px';
+                eggMessage.style.zIndex = '1000';
+                eggMessage.style.boxShadow = '0 0 20px #00ff00';
+                document.body.appendChild(eggMessage);
+                setTimeout(() => {
+                    eggMessage.remove();
+                }, 3000);
+                document.body.style.animation = 'hue-rotate 2s infinite linear';
+            }
+        });
+    </script>
+</body>
+</html>

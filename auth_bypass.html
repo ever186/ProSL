@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureLab - Bypass de Autenticación</title>
+    <style>
+        /* Estilos CSS idénticos a sql_injection.html - Pégalos aquí */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Courier New', monospace; background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%); color: #00ff00; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; border: 2px solid #00ff00; padding: 20px; background: rgba(0, 255, 0, 0.1); }
+        .header h1 { font-size: 2.2em; margin-bottom: 10px; text-shadow: 0 0 10px #00ff00; }
+        .back-link { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background-color: #00ff00; color: #000; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background-color 0.3s, transform 0.3s; border: 1px solid #00ff00; }
+        .back-link:hover { background-color: #00cccc; transform: scale(1.05); }
+        .content-section { margin-bottom: 20px; }
+        .concept-section, .how-it-works-section, .examples-section { background: rgba(0, 30, 0, 0.2); border: 1px solid #00cc00; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
+        .concept-section h2, .how-it-works-section h2, .examples-section h2 { color: #00ffff; border-bottom: 1px solid #00ffff; padding-bottom: 8px; margin-bottom: 15px; font-size: 1.5em; }
+        .concept-section p, .how-it-works-section p, .examples-section p, .examples-section ul li { color: #ccffcc; line-height: 1.7; margin-bottom: 10px; }
+        .examples-section ul { list-style-type: none; padding-left: 0; }
+        .examples-section ul li { background: rgba(0, 50, 0, 0.4); padding: 15px; margin-bottom: 10px; border-radius: 4px; border-left: 3px solid #00ff00; }
+        .examples-section strong { color: #ffff00; display: block; margin-bottom: 5px; font-size: 1.1em; }
+        .examples-section em { color: #00ff00; font-style: normal; }
+        .examples-section code { background-color: #000; color: #00ff00; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; display: inline-block; margin-top: 5px; margin-bottom: 5px;}
+        .lab-section { background: rgba(0, 50, 0, 0.3); border: 1px solid #00ff00; margin: 20px 0; padding: 20px; border-radius: 5px; }
+        .lab-section h3 { color: #00ffff; margin-bottom: 15px; border-bottom: 2px solid #00ffff; padding-bottom: 5px; font-size: 1.5em; }
+        button { background: #00ff00; color: #000; border: none; padding: 10px 20px; margin: 5px; /* Ajuste para múltiples botones */ border-radius: 3px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        button:hover { background: #00cccc; transform: scale(1.05); }
+        .vulnerability-info { background: rgba(255, 255, 0, 0.1); border-left: 4px solid #ffff00; padding: 10px; margin: 15px 0; color: #ffff00; }
+        .hidden-admin {
+            display: none;
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            padding: 20px;
+            margin: 20px 0;
+            color: #ff0000; /* Color de texto para el panel secreto */
+            border-radius: 5px;
+        }
+        .hidden-admin h4 { color: #ff4444; margin-bottom: 10px; }
+        .hidden-admin p, .hidden-admin ul { color: #ffaaaa; }
+        .hidden-admin ul { list-style-type: disc; margin-left: 20px; }
+        .results { background: rgba(0, 255, 255, 0.1); border: 1px solid #00ffff; padding: 15px; margin: 10px 0; border-radius: 5px; min-height: 50px; word-wrap: break-word; }
+        .message-box {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #1a1a2e;
+            color: #00ff00;
+            padding: 25px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            box-shadow: 0 0 15px #00ff00;
+            z-index: 1001;
+            text-align: center;
+        }
+        .message-box button { margin-top: 15px; }
+        @keyframes hue-rotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Laboratorio: Bypass de Autenticación</h1>
+        </div>
+
+        <a href="index.html" class="back-link">🏠 Volver al Inicio</a>
+        
+        <div id="custom-alert-box" class="message-box">
+            <p id="custom-alert-message"></p>
+            <button onclick="closeCustomAlert()">Entendido</button>
+        </div>
+
+        <div class="content-section">
+            <div class="concept-section">
+                <h2>¿Qué es el Bypass de Autenticación?</h2>
+                <p>
+                    El Bypass de Autenticación ocurre cuando un atacante logra acceder a funcionalidades o datos protegidos sin pasar por los mecanismos de autenticación establecidos (como un login). Esto puede suceder debido a fallos lógicos en la aplicación, controles de acceso inseguros implementados solo del lado del cliente (en el navegador), referencias directas a objetos inseguras (IDOR), o la explotación de otras vulnerabilidades que indirectamente permiten el acceso no autorizado.
+                </p>
+            </div>
+
+            <div class="how-it-works-section">
+                <h2>¿Cómo funciona en este laboratorio?</h2>
+                <p>
+                    El "Panel de Administración" está inicialmente oculto usando CSS (<code>display: none;</code>). Sin embargo, el contenido del panel sigue presente en el código HTML de la página que se envía al navegador. La "protección" es meramente visual y del lado del cliente. No hay una verificación real del lado del servidor que compruebe si el usuario tiene permisos de administrador antes de mostrar este panel. Un usuario puede usar las herramientas de desarrollador del navegador (inspector de elementos) para modificar el CSS y hacer visible el panel, o ejecutar JavaScript simple en la consola del navegador para cambiar su estilo y revelarlo.
+                </p>
+            </div>
+
+            <div class="examples-section">
+                <h2>Ejemplos Prácticos de Bypass de Autenticación (en este contexto)</h2>
+                <ul>
+                    <li>
+                        <strong>Ejemplo 1: Inspeccionar Elemento y Modificar CSS (Original)</strong>
+                        <p>Acción: Haz clic derecho en algún lugar cerca de donde crees que está el panel (o sobre el botón "Acceso Normal"), selecciona "Inspeccionar Elemento". Busca en el HTML un <code>div</code> con <code>id="admin-panel"</code>. En el panel de estilos, desmarca o cambia la propiedad <code>display: none</code> a <code>display: block</code> (o cualquier otro valor visible como <code>flex</code>, <code>grid</code>).</p>
+                        <p><em>Pista:</em> Las herramientas de desarrollador son poderosas para manipular el frontend. Muchos sitios ocultan elementos así, pero si no hay protección en el backend, es inseguro.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 2: Ejecutar JavaScript en la Consola</strong>
+                        <p>Acción: Abre la consola de desarrollador de tu navegador (usualmente con F12 y luego seleccionando la pestaña "Consola"). Escribe y ejecuta el siguiente comando: <code>document.getElementById('admin-panel').style.display='block'</code></p>
+                        <p><em>Pista:</em> La consola permite ejecutar JavaScript directamente en el contexto de la página, dándote control sobre los elementos del DOM.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 3: Adivinar URLs de Administración (Conceptual)</strong>
+                        <p>Acción: En una aplicación real, podrías intentar navegar directamente a URLs comunes de administración como <code>/admin</code>, <code>/dashboard</code>, <code>/admin.php</code>, <code>/panel_control</code>. Si estas páginas no verifican la sesión del usuario en el servidor, podrías acceder.</p>
+                        <p><em>Pista:</em> Este es un tipo común de bypass si las rutas no están protegidas adecuadamente en el backend. Este laboratorio no tiene múltiples URLs, pero es un vector importante.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 4: Manipulación de Parámetros de URL o Cookies (Conceptual)</strong>
+                        <p>Acción: Si una URL fuera <code>example.com/user_page?admin=false</code> o una cookie se llamara <code>isAdmin=0</code>, un atacante podría intentar cambiarlo a <code>admin=true</code> o <code>isAdmin=1</code> y recargar la página.</p>
+                        <p><em>Pista:</em> Los parámetros controlados por el cliente que afectan los privilegios son muy peligrosos si no se validan en el servidor.</p>
+                    </li>
+                    <li>
+                        <strong>Ejemplo 5: Forzar Navegación (IDOR Conceptual)</strong>
+                        <p>Acción: Si tuvieras acceso a <code>ver_pedido.php?id=123</code> (tu pedido) y la aplicación no verifica correctamente la propiedad, podrías intentar <code>ver_pedido.php?id=124</code> para ver el pedido de otro usuario.</p>
+                        <p><em>Pista:</em> Esto se llama Insecure Direct Object Reference (IDOR) y es una forma de bypass de autorización, que está relacionada con la autenticación.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="lab-section" id="auth-bypass-lab">
+            <h3>🎯 Laboratorio Práctico: Bypass de Autenticación</h3>
+            <div class="vulnerability-info">
+                <strong>Vulnerabilidad:</strong> Panel de administración oculto solo con CSS, pero accesible mediante manipulación del DOM o JavaScript en el cliente.
+            </div>
+            
+            <p>Intenta acceder al panel de administración secreto.</p>
+            <button onclick="showNormalAccessMessage()">Acceso Normal (Simulado)</button>
+            <button onclick="document.getElementById('admin-panel').style.display='block'; showBypassMessage();">🕵️ Forzar Visibilidad (Bypass)</button>
+            
+            <div class="hidden-admin" id="admin-panel">
+                <h4>🚨 PANEL DE ADMINISTRACIÓN SECRETO 🚨</h4>
+                <p>¡Has accedido al panel secreto! Esto demuestra un control de acceso débil.</p>
+                <p>Información confidencial (simulada):</p>
+                <ul>
+                    <li>Clave API Maestra: <code>SECRET_API_KEY_12345XYZ</code></li>
+                    <li>Endpoint de Backup: <code>/internal/backup_db.php</code></li>
+                    <li>Usuario Admin Principal: <code>superroot</code></li>
+                </ul>
+            </div>
+            <div class="results" id="auth-bypass-result">
+                </div>
+
+            <div class="vulnerability-info">
+                <strong>Pista Principal:</strong> Inspecciona el elemento HTML de esta página o usa la consola de JavaScript para encontrar y mostrar el div con id <code>admin-panel</code>.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showCustomAlert(message) {
+            document.getElementById('custom-alert-message').textContent = message;
+            document.getElementById('custom-alert-box').style.display = 'block';
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('custom-alert-box').style.display = 'none';
+        }
+
+        function showNormalAccessMessage() {
+            const resultDiv = document.getElementById('auth-bypass-result');
+            resultDiv.innerHTML = '<p style="color:#ffcc00;">Intento de acceso normal: Acceso denegado. Se requieren privilegios de administrador.</p>';
+            resultDiv.style.borderColor = '#ffcc00';
+            // En un caso real, aquí no se mostraría el panel.
+            // showCustomAlert('Acceso denegado. Se requieren privilegios de administrador.');
+        }
+
+        function showBypassMessage() {
+            const resultDiv = document.getElementById('auth-bypass-result');
+            resultDiv.innerHTML = '<p style="color:#00ff00;">¡Bypass Exitoso! El panel de administración ahora es visible.</p>';
+            resultDiv.style.borderColor = '#00ff00';
+        }
+        
+        // Para el botón original de "Acceso Normal" que llamaba a showAdminPanel()
+        // Lo renombramos para evitar confusión con el panel en sí.
+        // function showAdminPanel() { // Esta función estaba en el original, la adaptamos.
+        //    showCustomAlert('Acceso denegado. Se requieren privilegios de administrador.');
+        // }
+
+
+        // Easter egg - Konami code
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            if (konamiCode.toString() === konamiSequence.toString()) {
+                console.log('🎮 Easter Egg Found! You discovered the Konami Code!');
+                const eggMessage = document.createElement('div');
+                eggMessage.textContent = '🎮 Konami Code Activated! 🎮';
+                eggMessage.style.position = 'fixed';
+                eggMessage.style.top = '50%';
+                eggMessage.style.left = '50%';
+                eggMessage.style.transform = 'translate(-50%, -50%)';
+                eggMessage.style.padding = '20px';
+                eggMessage.style.background = '#00ff00';
+                eggMessage.style.color = '#000';
+                eggMessage.style.border = '2px solid #000';
+                eggMessage.style.borderRadius = '10px';
+                eggMessage.style.zIndex = '1000';
+                eggMessage.style.boxShadow = '0 0 20px #00ff00';
+                document.body.appendChild(eggMessage);
+                setTimeout(() => {
+                    eggMessage.remove();
+                }, 3000);
+                document.body.style.animation = 'hue-rotate 2s infinite linear';
+            }
+        });
+    </script>
+</body>
+</html>
