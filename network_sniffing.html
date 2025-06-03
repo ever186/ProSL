@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureLab - Seguridad en Wi-Fi</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      border: 2px solid #00ff00;
+      padding: 20px;
+      margin-bottom: 30px;
+      background: rgba(0, 255, 0, 0.1);
+    }
+    .header h1 {
+      font-size: 2.2em;
+      text-shadow: 0 0 10px #00ff00;
+    }
+    .section {
+      background: rgba(0, 30, 0, 0.2);
+      border: 1px solid #00cc00;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    .section h2 {
+      color: #00ffff;
+      border-bottom: 1px solid #00ffff;
+      margin-bottom: 15px;
+    }
+    .section p, .section ul, .section li {
+      color: #ccffcc;
+      line-height: 1.7;
+    }
+    pre {
+      background: #000;
+      color: #00ff00;
+      padding: 10px;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin-bottom: 15px;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      border-top: 1px solid #00ff00;
+      margin-top: 40px;
+      color: #00ff00;
+    }
+    footer a {
+      color: #00ffff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Seguridad en Redes Wi-Fi</h1>
+    </div>
+
+    <div class="section">
+      <h2>¿Qué es la Auditoría Wi-Fi?</h2>
+      <p>La auditoría Wi-Fi consiste en analizar una red inalámbrica para identificar vulnerabilidades de seguridad, evaluar el nivel de protección y comprobar si es susceptible a ataques como fuerza bruta, desautenticación, o redes falsas (Evil Twin).</p>
+    </div>
+
+    <div class="section">
+      <h2>¿Cómo Funciona?</h2>
+      <p>El proceso implica el uso de una tarjeta de red en modo monitor para interceptar paquetes de datos, con el objetivo de capturar el "handshake" (proceso de autenticación entre un dispositivo y el punto de acceso). Una vez obtenido, se intenta descifrar la clave usando ataques por diccionario.</p>
+    </div>
+
+    <div class="section">
+      <h2>🧪 Paso a Paso para Auditar una Red Wi-Fi</h2>
+
+      <h3>Paso 1: Identificar tu interfaz de red</h3>
+      <p>Usa el siguiente comando para ver tus interfaces de red disponibles:</p>
+      <pre>ip a</pre>
+      <p>Identifica tu tarjeta Wi-Fi, normalmente llamada <code>wlan0</code>.</p>
+
+      <h3>Paso 2: Activar modo monitor</h3>
+      <pre>sudo airmon-ng start wlan0</pre>
+      <p>Este comando pone la interfaz en modo monitor, permitiendo escuchar todo el tráfico inalámbrico del entorno.</p>
+
+      <h3>Paso 3: Escanear redes cercanas</h3>
+      <pre>sudo airodump-ng wlan0mon</pre>
+      <p>Este comando lista todas las redes inalámbricas disponibles y los dispositivos conectados a ellas. Toma nota del canal (<code>CH</code>) y la dirección BSSID (MAC del router).</p>
+
+      <h3>Paso 4: Enfocar la captura en una red específica</h3>
+      <pre>sudo airodump-ng -c [canal] --bssid [BSSID] -w captura wlan0mon</pre>
+      <p>Reemplaza <code>[canal]</code> y <code>[BSSID]</code> por los valores específicos. Esto comienza la captura de tráfico de esa red específica en un archivo llamado <code>captura.cap</code>.</p>
+
+      <h3>Paso 5: Forzar desconexión (ataque deauth)</h3>
+      <pre>sudo aireplay-ng --deauth 10 -a [BSSID] wlan0mon</pre>
+      <p>Este comando desconecta a los clientes del router. Cuando se reconectan, se genera un handshake que será capturado por <code>airodump-ng</code>.</p>
+
+      <h3>Paso 6: Verificar si se capturó el handshake</h3>
+      <p>El archivo generado por <code>airodump-ng</code> indicará "WPA handshake:" en la parte superior derecha si se ha capturado correctamente.</p>
+
+      <h3>Paso 7: Romper la clave usando diccionario</h3>
+      <pre>aircrack-ng -w rockyou.txt -b [BSSID] captura.cap</pre>
+      <p>Este paso intenta descifrar la clave WPA utilizando un diccionario de contraseñas como <code>rockyou.txt</code>. Si la clave está en el diccionario, será revelada.</p>
+
+    </div>
+
+    <footer>
+      Página creada por EJ | <a href="https://github.com/ever186" target="_blank">GitHub</a>
+    </footer>
+  </div>
+</body>
+</html>
