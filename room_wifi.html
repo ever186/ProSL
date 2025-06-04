@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WiFi PenTest Lab - Simulador Interactivo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e);
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 30px;
+      background: rgba(0, 255, 0, 0.1);
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      text-shadow: 0 0 20px #00ff00;
+      margin-bottom: 10px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 20px #00ff00; }
+      to { text-shadow: 0 0 30px #00ff00, 0 0 40px #00ff00; }
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .networks-panel {
+      background: rgba(0, 30, 0, 0.3);
+      border: 1px solid #00cc00;
+      border-radius: 8px;
+      padding: 20px;
+      height: fit-content;
+    }
+
+    .terminal-panel {
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00ff00;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 500px;
+    }
+
+    .network-item {
+      background: rgba(0, 50, 0, 0.4);
+      border: 1px solid #00aa00;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .network-item:hover {
+      background: rgba(0, 80, 0, 0.6);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+      transform: translateX(5px);
+    }
+
+    .network-item.selected {
+      border-color: #ffff00;
+      background: rgba(80, 80, 0, 0.4);
+    }
+
+    .network-ssid {
+      color: #00ffff;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .network-details {
+      color: #ccffcc;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+
+    .security-level {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+
+    .security-low { background: #ff4444; color: white; }
+    .security-medium { background: #ffaa00; color: white; }
+    .security-high { background: #00aa00; color: white; }
+
+    .terminal {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      border-radius: 5px;
+      min-height: 400px;
+      font-family: 'Courier New', monospace;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      position: relative;
+    }
+
+    .terminal-prompt {
+      color: #00ffff;
+    }
+
+    .terminal-input {
+      background: transparent;
+      border: none;
+      color: #00ff00;
+      font-family: inherit;
+      font-size: inherit;
+      outline: none;
+      width: 100%;
+    }
+
+    .command-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cmd-btn {
+      background: rgba(0, 100, 0, 0.3);
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .cmd-btn:hover {
+      background: rgba(0, 150, 0, 0.5);
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    .cmd-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #00ff00;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff00, #ffff00);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .results-panel {
+      background: rgba(0, 0, 50, 0.3);
+      border: 1px solid #0099ff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .success {
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    .warning {
+      color: #ffaa00;
+      font-weight: bold;
+    }
+
+    .error {
+      color: #ff4444;
+      font-weight: bold;
+    }
+
+    .challenge-panel {
+      background: rgba(50, 0, 50, 0.3);
+      border: 1px solid #ff00ff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .challenge-title {
+      color: #ff00ff;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    .score-panel {
+      background: rgba(0, 50, 50, 0.3);
+      border: 1px solid #00ffff;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .blinking {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .tool-status {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00ff00;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header h1 {
+        font-size: 1.8em;
+      }
+      
+      .command-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🛡️ WiFi PenTest Lab</h1>
+      <p>Simulador Interactivo de Auditoría Wi-Fi</p>
+      <div class="score-panel">
+        <span>Puntuación: <span id="score">0</span> | Nivel: <span id="level">Principiante</span></span>
+      </div>
+    </div>
+
+    <div class="tool-status">
+      <div>Adaptador: <span id="adapter-status">wlan0mon</span></div>
+      <div>Estado: <span id="tool-status">Listo</span></div>
+    </div>
+
+    <div class="lab-grid">
+      <div class="networks-panel">
+        <h3>🌐 Redes Detectadas</h3>
+        <div id="networks-list">
+          <div class="network-item" data-network="home-wifi">
+            <div class="security-level security-medium">WPA2</div>
+            <div class="network-ssid">HomeWiFi_2.4G</div>
+            <div class="network-details">
+              BSSID: 00:1A:2B:3C:4D:5E<br>
+              Canal: 6 | Señal: -45 dBm<br>
+              WPS: Habilitado
+            </div>
+          </div>
+
+          <div class="network-item" data-network="office-secure">
+            <div class="security-level security-high">WPA3</div>
+            <div class="network-ssid">OfficeSecure</div>
+            <div class="network-details">
+              BSSID: AA:BB:CC:DD:EE:FF<br>
+              Canal: 11 | Señal: -38 dBm<br>
+              WPS: Deshabilitado
+            </div>
+          </div>
+
+          <div class="network-item" data-network="old-router">
+            <div class="security-level security-low">WEP</div>
+            <div class="network-ssid">OldRouter</div>
+            <div class="network-details">
+              BSSID: 11:22:33:44:55:66<br>
+              Canal: 1 | Señal: -52 dBm<br>
+              WPS: N/A
+            </div>
+          </div>
+
+          <div class="network-item" data-network="guest-open">
+            <div class="security-level security-low">Abierta</div>
+            <div class="network-ssid">Guest_Network</div>
+            <div class="network-details">
+              BSSID: 77:88:99:AA:BB:CC<br>
+              Canal: 9 | Señal: -41 dBm<br>
+              WPS: N/A
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="terminal-panel">
+        <h3>💻 Terminal de Comandos</h3>
+        <div class="command-buttons">
+          <button class="cmd-btn" onclick="scanNetworks()">Escanear Redes</button>
+          <button class="cmd-btn" onclick="captureHandshake()" id="capture-btn" disabled>Capturar Handshake</button>
+          <button class="cmd-btn" onclick="wpsAttack()" id="wps-btn" disabled>Ataque WPS</button>
+          <button class="cmd-btn" onclick="dictionaryAttack()" id="dict-btn" disabled>Ataque Diccionario</button>
+          <button class="cmd-btn" onclick="deauth()" id="deauth-btn" disabled>Desautenticación</button>
+          <button class="cmd-btn" onclick="createEvilTwin()" id="evil-btn" disabled>Evil Twin</button>
+        </div>
+
+        <div class="progress-bar hidden" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="terminal" id="terminal">
+root@kali:~# <span class="blinking">█</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-panel" id="results-panel" style="display: none;">
+      <h3>📊 Resultados del Ataque</h3>
+      <div id="results-content"></div>
+    </div>
+
+    <div class="challenge-panel">
+      <div class="challenge-title">🎯 Desafío Actual</div>
+      <div id="current-challenge">
+        <strong>Desafío 1:</strong> Realiza un escaneo de redes y selecciona un objetivo vulnerable para comenzar tu primera auditoría.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedNetwork = null;
+    let currentScore = 0;
+    let currentLevel = 'Principiante';
+    let hasHandshake = false;
+    let isScanning = false;
+
+    const networks = {
+      'home-wifi': {
+        name: 'HomeWiFi_2.4G',
+        security: 'WPA2',
+        wps: true,
+        password: 'password123',
+        difficulty: 'medium',
+        clients: ['AA:BB:CC:DD:EE:11', 'AA:BB:CC:DD:EE:22']
+      },
+      'office-secure': {
+        name: 'OfficeSecure',
+        security: 'WPA3',
+        wps: false,
+        password: 'C0mp13xP@ssw0rd!2024',
+        difficulty: 'hard',
+        clients: ['BB:CC:DD:EE:FF:11']
+      },
+      'old-router': {
+        name: 'OldRouter',
+        security: 'WEP',
+        wps: false,
+        password: '1234567890',
+        difficulty: 'easy',
+        clients: ['CC:DD:EE:FF:AA:11', 'CC:DD:EE:FF:AA:22', 'CC:DD:EE:FF:AA:33']
+      },
+      'guest-open': {
+        name: 'Guest_Network',
+        security: 'Open',
+        wps: false,
+        password: null,
+        difficulty: 'easy',
+        clients: ['DD:EE:FF:AA:BB:11']
+      }
+    };
+
+    const challenges = [
+      "Realiza un escaneo de redes y selecciona un objetivo vulnerable.",
+      "Captura un handshake WPA/WPA2 exitosamente.",
+      "Realiza un ataque WPS contra una red vulnerable.",
+      "Completa un ataque de diccionario exitoso.",
+      "Crea un Evil Twin para una red específica.",
+      "Combina múltiples técnicas para obtener acceso completo."
+    ];
+
+    let currentChallengeIndex = 0;
+
+    function addToTerminal(text, className = '') {
+      const terminal = document.getElementById('terminal');
+      const line = document.createElement('div');
+      line.className = className;
+      line.textContent = text;
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function clearTerminal() {
+      const terminal = document.getElementById('terminal');
+      terminal.innerHTML = 'root@kali:~# <span class="blinking">█</span>';
+    }
+
+    function updateScore(points) {
+      currentScore += points;
+      document.getElementById('score').textContent = currentScore;
+      
+      if (currentScore >= 500) currentLevel = 'Experto';
+      else if (currentScore >= 300) currentLevel = 'Avanzado';
+      else if (currentScore >= 150) currentLevel = 'Intermedio';
+      
+      document.getElementById('level').textContent = currentLevel;
+    }
+
+    function updateChallenge() {
+      if (currentChallengeIndex < challenges.length - 1) {
+        currentChallengeIndex++;
+        document.getElementById('current-challenge').innerHTML = 
+          `<strong>Desafío ${currentChallengeIndex + 1}:</strong> ${challenges[currentChallengeIndex]}`;
+      }
+    }
+
+    function showProgress(duration) {
+      const progressBar = document.getElementById('progress-bar');
+      const progressFill = document.getElementById('progress-fill');
+      
+      progressBar.classList.remove('hidden');
+      progressFill.style.width = '0%';
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 2;
+        progressFill.style.width = progress + '%';
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            progressBar.classList.add('hidden');
+          }, 500);
+        }
+      }, duration / 50);
+    }
+
+    function selectNetwork(networkId) {
+      // Deseleccionar red anterior
+      document.querySelectorAll('.network-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      
+      // Seleccionar nueva red
+      const networkElement = document.querySelector(`[data-network="${networkId}"]`);
+      networkElement.classList.add('selected');
+      
+      selectedNetwork = networkId;
+      
+      // Habilitar botones según el tipo de red
+      const network = networks[networkId];
+      document.getElementById('capture-btn').disabled = network.security === 'Open';
+      document.getElementById('wps-btn').disabled = !network.wps;
+      document.getElementById('dict-btn').disabled = hasHandshake === false && network.security !== 'WEP';
+      document.getElementById('deauth-btn').disabled = network.clients.length === 0;
+      document.getElementById('evil-btn').disabled = false;
+      
+      addToTerminal(`[+] Red seleccionada: ${network.name}`, 'success');
+      addToTerminal(`[INFO] Tipo de seguridad: ${network.security}`);
+      addToTerminal(`[INFO] WPS habilitado: ${network.wps ? 'Sí' : 'No'}`);
+      addToTerminal(`[INFO] Clientes conectados: ${network.clients.length}`);
+    }
+
+    function scanNetworks() {
+      if (isScanning) return;
+      
+      isScanning = true;
+      document.getElementById('tool-status').textContent = 'Escaneando...';
+      
+      addToTerminal('[*] Iniciando escaneo de redes Wi-Fi...');
+      addToTerminal('sudo airodump-ng wlan0mon');
+      addToTerminal('');
+      
+      showProgress(3000);
+      
+      setTimeout(() => {
+        addToTerminal('BSSID              PWR  Beacons  #Data  CH  MB   CC  ESSID', 'success');
+        addToTerminal('00:1A:2B:3C:4D:5E  -45      123     89   6  54   WPA2  HomeWiFi_2.4G');
+        addToTerminal('AA:BB:CC:DD:EE:FF  -38       89     156  11  54   WPA3  OfficeSecure');
+        addToTerminal('11:22:33:44:55:66  -52       45     23   1  11   WEP   OldRouter');
+        addToTerminal('77:88:99:AA:BB:CC  -41       67     34   9  54   OPN   Guest_Network');
+        addToTerminal('');
+        addToTerminal('[+] Escaneo completado. 4 redes detectadas.', 'success');
+        
+        updateScore(10);
+        if (currentChallengeIndex === 0) updateChallenge();
+        
+        document.getElementById('tool-status').textContent = 'Listo';
+        isScanning = false;
+      }, 3000);
+    }
+
+    function captureHandshake() {
+      if (!selectedNetwork) {
+        addToTerminal('[!] Selecciona una red primero', 'error');
+        return;
+      }
+      
+      const network = networks[selectedNetwork];
+      if (network.security === 'Open') {
+        addToTerminal('[!] Las redes abiertas no tienen handshake', 'warning');
+        return;
+      }
+      
+      addToTerminal(`[*] Capturando handshake de ${network.name}...`);
+      addToTerminal(`sudo airodump-ng -c 6 --bssid ${selectedNetwork.split('-')[0]}:XX:XX:XX:XX:XX -w capture wlan0mon`);
+      
+      showProgress(4000);
+      
+      setTimeout(() => {
+        const success = Math.random() > 0.3; // 70% probabilidad de éxito
+        
+        if (success) {
+          addToTerminal('[+] ¡Handshake capturado exitosamente!', 'success');
+          addToTerminal('[+] Archivo guardado: capture-01.cap');
+          hasHandshake = true;
+          document.getElementById('dict-btn').disabled = false;
+          updateScore(50);
+          if (currentChallengeIndex === 1) updateChallenge();
+        } else {
+          addToTerminal('[!] No se pudo capturar handshake. Intenta de nuevo.', 'warning');
+          addToTerminal('[TIP] Prueba realizar un ataque de desautenticación primero');
+        }
+      }, 4000);
+    }
+
+    function wpsAttack() {
+      if (!selectedNetwork) {
+        addToTerminal('[!] Selecciona una red primero', 'error');
+        return;
+      }
+      
+      const network = networks[selectedNetwork];
+      if (!network.wps) {
+        addToTerminal('[!] WPS no está habilitado en esta red', 'error');
+        return;
+      }
+      
+      addToTerminal(`[*] Iniciando ataque WPS contra ${network.name}...`);
+      addToTerminal(`sudo reaver -i wlan0mon -b ${selectedNetwork.split('-')[0]}:XX:XX:XX:XX:XX -vv -K 1`);
+      
+      showProgress(6000);
+      
+      setTimeout(() => {
+        const success = Math.random() > 0.4; // 60% probabilidad de éxito
+        
+        if (success) {
+          addToTerminal('[+] ¡Ataque WPS exitoso!', 'success');
+          addToTerminal(`[+] PSK encontrada: ${network.password}`);
+          addToTerminal('[+] WPS PIN: 12345670');
+          updateScore(100);
+          if (currentChallengeIndex === 2) updateChallenge();
+          showResults('WPS Attack', network.password, 'Successful');
+        } else {
+          addToTerminal('[!] Ataque WPS fallido. El punto de acceso puede tener protección.', 'warning');
+          addToTerminal('[TIP] Algunos routers implementan rate limiting o timeouts');
+        }
+      }, 6000);
+    }
+
+    function dictionaryAttack() {
+      if (!selectedNetwork) {
+        addToTerminal('[!] Selecciona una red primero', 'error');
+        return;
+      }
+      
+      const network = networks[selectedNetwork];
+      
+      if (network.security === 'WEP') {
+        addToTerminal(`[*] Iniciando ataque WEP contra ${network.name}...`);
+        addToTerminal(`aircrack-ng -b ${selectedNetwork.split('-')[0]}:XX:XX:XX:XX:XX capture*.cap`);
+      } else if (hasHandshake) {
+        addToTerminal(`[*] Iniciando ataque de diccionario contra ${network.name}...`);
+        addToTerminal(`aircrack-ng -w rockyou.txt -b ${selectedNetwork.split('-')[0]}:XX:XX:XX:XX:XX capture-01.cap`);
+      } else {
+        addToTerminal('[!] Necesitas capturar un handshake primero', 'error');
+        return;
+      }
+      
+      showProgress(8000);
+      
+      setTimeout(() => {
+        let success = false;
+        
+        // Diferentes probabilidades según dificultad
+        if (network.difficulty === 'easy') success = Math.random() > 0.2;
+        else if (network.difficulty === 'medium') success = Math.random() > 0.6;
+        else success = Math.random() > 0.8;
+        
+        if (success) {
+          addToTerminal('[+] ¡Contraseña encontrada!', 'success');
+          addToTerminal(`[+] Password: ${network.password}`);
+          addToTerminal(`[+] Tiempo: ${Math.floor(Math.random() * 300 + 60)} segundos`);
+          updateScore(network.difficulty === 'easy' ? 30 : network.difficulty === 'medium' ? 75 : 150);
+          if (currentChallengeIndex === 3) updateChallenge();
+          showResults('Dictionary Attack', network.password, 'Successful');
+        } else {
+          addToTerminal('[!] Contraseña no encontrada en el diccionario', 'warning');
+          addToTerminal('[TIP] Prueba con un diccionario más grande o fuerza bruta');
+        }
+      }, 8000);
+    }
+
+    function deauth() {
+      if (!selectedNetwork) {
+        addToTerminal('[!] Selecciona una red primero', 'error');
+        return;
+      }
+      
+      const network = networks[selectedNetwork];
+      const randomClient = network.clients[Math.floor(Math.random() * network.clients.length)];
+      
+      addToTerminal(`[*] Enviando paquetes de desautenticación...`);
+      addToTerminal(`sudo aireplay-ng --deauth 10 -a ${selectedNetwork.split('-')[0]}:XX:XX:XX:XX:XX -c ${randomClient} wlan0mon`);
+      
+      showProgress(2000);
+      
+      setTimeout(() => {
+        addToTerminal('[+] Paquetes de desautenticación enviados', 'success');
+        addToTerminal(`[+] Cliente ${randomClient} desconectado`);
+        addToTerminal('[INFO] El cliente se reconectará automáticamente');
+        updateScore(20);
+        
+        // Aumentar probabilidad de capturar handshake después de deauth
+        if (!hasHandshake && network.security !== 'Open') {
+          addToTerminal('[TIP] Ahora es un buen momento para capturar handshake');
+        }
+      }, 2000);
+    }
+
+    function createEvilTwin() {
+      if (!selectedNetwork) {
+        addToTerminal('[!] Selecciona una red primero', 'error');
+        return;
+      }
+      
+      const network = networks[selectedNetwork];
+      
+      addToTerminal(`[*] Creando Evil Twin para ${network.name}...`);
+      addToTerminal('sudo hostapd evil_twin.conf &');
+      addToTerminal('sudo dnsmasq -C dnsmasq.conf &');
+      addToTerminal('sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE');
+      
+      showProgress(3000);
+      
+      setTimeout(() => {
+        addToTerminal('[+] Evil Twin creado exitosamente!', 'success');
+        addToTerminal(`[+] AP falso: ${network.name}_Free`);
+        addToTerminal('[+] Portal cautivo activo en 192.168.1.1');
+        addToTerminal('[INFO] Esperando conexiones de víctimas...');
+        
+        // Simular captura de credenciales
+        setTimeout(() => {
+          addToTerminal('[+] ¡Credenciales capturadas!', 'success');
+          addToTerminal('[+] Usuario: admin | Password: router123');
+          showResults('Evil Twin', 'admin:router123', 'Credentials Captured');
+        }, 2000);
+        
+        updateScore(80);
+        if (currentChallengeIndex === 4) updateChallenge();
+      }, 3000);
+    }
+
+    function showResults(attackType, result, status) {
+      const resultsPanel = document.getElementById('results-panel');
+      const resultsContent = document.getElementById('results-content');
+      
+      resultsContent.innerHTML = `
+        <div class="success">
+          <strong>Tipo de Ataque:</strong> ${attackType}<br>
+          <strong>Resultado:</strong> ${result}<br>
+          <strong>Estado:</strong> ${status}<br>
+          <strong>Red Objetivo:</strong> ${networks[selectedNetwork].name}<br>
+          <strong>Tiempo:</strong> ${new Date().toLocaleTimeString()}
+        </div>
+      `;
+      
+      resultsPanel.style.display = 'block';
+    }
+
+    // Event listeners para selección de redes
+    document.querySelectorAll('.network-item').forEach(item => {
+      item.addEventListener('click', () => {
+        selectNetwork(item.dataset.network);
+      });
+    });
+
+    // Inicializar
+    addToTerminal('WiFi Penetration Testing Lab v2.0');
+    addToTerminal('Kali Linux 2024.1 - Simulador Educativo');
+    addToTerminal('');
+    addToTerminal('[INFO] Herramientas cargadas: aircrack-ng, reaver, hostapd');
+    addToTerminal('[INFO] Adaptador en modo monitor: wlan0mon');
+    addToTerminal('');
+    addToTerminal('Usa los botones o selecciona una red para comenzar...');
+  </script>
+</body>
+</html>
