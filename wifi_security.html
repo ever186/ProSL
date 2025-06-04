@@ -5,16 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SecureLab - Auditoría Completa de Redes Wi-Fi</title>
   <style>
+    /* Reset default body/html margins to ensure no extra space */
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
       color: #00ff00;
       font-family: 'Courier New', monospace;
-      padding: 20px;
+      padding-top: 20px; /* Keep top padding for content */
+      padding-bottom: 0; /* Remove bottom padding from body */
       line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
     .container {
       max-width: 1400px;
       margin: 0 auto;
+      flex: 1; /* Allows container to grow and push footer down */
+      padding-left: 20px; /* Add back padding to content */
+      padding-right: 20px; /* Add back padding to content */
+      box-sizing: border-box; /* Include padding in max-width calculation */
     }
     .header {
       text-align: center;
@@ -33,6 +47,28 @@
       font-size: 1.1em;
       color: #ccffcc;
       margin: 0;
+    }
+    /* Clearfix para asegurar que el float no afecte el siguiente contenido */
+    .header::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #00ff00;
+      color: #000;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.3s;
+      border: 1px solid #00ff00;
+    }
+    .back-link:hover {
+      background-color: #00cccc;
+      transform: scale(1.05);
     }
     .section {
       background: rgba(0, 30, 0, 0.2);
@@ -120,25 +156,126 @@
       content: "⚠️ ";
       font-size: 1.2em;
     }
-    footer {
-      text-align: center;
-      padding: 20px;
-      border-top: 2px solid #00ff00;
-      margin-top: 50px;
-      color: #00ff00;
-    }
-    footer a {
-      color: #00ffff;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    footer a:hover {
-      color: #ffff00;
-    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
       gap: 25px;
+    }
+    .redirect-button {
+            margin-top: 40px; /* Original space above */
+            margin-bottom: 50px; /* Space below the button */
+            background-color: #00ff00;
+            color: #000;
+            font-size: 1.8em;
+            padding: 15px 30px;
+            border: 3px solid #00ff00;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), 0 0 25px rgba(0, 255, 0, 0.3);
+            transition: all 0.3s ease-in-out;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 400px;
+    }
+    .redirect-button:hover {
+            background-color: #00cc00;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7), 0 0 30px rgba(0, 255, 0, 0.5);
+    }
+
+    /* Estilos para el Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: #1a1a2e;
+      border: 2px solid #00ff00;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+      width: 90%;
+      max-width: 1000px;
+      height: 90%;
+      max-height: 700px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-content h2 {
+        color: #00ffff;
+        margin-top: 0;
+        margin-bottom: 15px;
+        text-align: center;
+        font-size: 1.8em;
+    }
+
+    .modal-iframe {
+      width: 100%;
+      height: calc(100% - 50px);
+      border: none;
+    }
+
+    .modal-close-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 1.2em;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .modal-close-button:hover {
+      background-color: #cc0000;
+    }
+   .footer {
+      background-color: #0a0a0a;
+      color: #00ff00;
+      text-align: center;
+      padding: 15px 20px; /* Re-added horizontal padding to align with container */
+      border-top: 1px solid #00ff00;
+      margin-top: auto;
+      /* Removed: width: 100vw; position: relative; left: 50%; transform: translateX(-50%); */
+      /* This will now align with the .container due to its placement and margin auto */
+    }
+    .footer p {
+      margin: 5px 0;
+    }
+    .footer a {
+      color: #00ffff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer a:hover {
+      color: #00cccc;
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -147,7 +284,10 @@
     <div class="header">
       <h1>Auditoría Completa de Redes Wi-Fi</h1>
       <p>Guía Técnica Avanzada para Evaluación de Seguridad Inalámbrica</p>
+      </a>
     </div>
+
+    <a href="index.html" class="back-link">🏠 Volver al Inicio</a>
 
     <div class="section">
       <h2>¿Qué es la Auditoría Wi-Fi?</h2>
@@ -170,7 +310,7 @@
         <li><strong>SSIDs:</strong> Nombres de red visibles y ocultos</li>
         <li><strong>BSSIDs:</strong> Direcciones MAC únicas de los puntos de acceso</li>
         <li><strong>Canales de operación:</strong> Frecuencias utilizadas (2.4GHz/5GHz)</li>
-        <li><strong>Tipos de seguridad:</strong> WEP, WPA/WPA2, WPA3, redes abiertas</li>
+        <li><strong>Tipos de seguridad:s</strong> WEP, WPA/WPA2, WPA3, redes abiertas</li>
         <li><strong>Intensidad de señal:</strong> Para determinar proximidad y cobertura</li>
       </ul>
       
@@ -373,10 +513,89 @@ aircrack-ng -b 00:11:22:33:44:55 wep_crack*.cap</pre>
       </ul>
     </div>
 
-    <footer>
-      Página creada por EJ | <a href="https://github.com/ever186" target="_blank">GitHub</a> | 
-      Solo para uso educativo y autorizado
-    </footer>
+    <button class="redirect-button" onclick="openWifiRoomModal()">JOIN ROOM WIFI👾</button>
+
+  </div> <footer class="footer">
+      <p>La seguridad es un proceso, no un producto.</p>
+      <p>Inspirado por ever186</p>
+  </footer>
+
+  <div id="wifiRoomModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close-button" onclick="closeWifiRoomModal()">X</button>
+      <h2>Sala Wi-Fi</h2>
+      <iframe id="wifiRoomIframe" class="modal-iframe" src=""></iframe>
+    </div>
   </div>
+
+  <div id="sqlInjectionModal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close-button" onclick="closeSqlInjectionModal()">X</button>
+      <h2>Laboratorio: SQL Injection</h2>
+      <iframe id="sqlInjectionIframe" class="modal-iframe" src=""></iframe>
+    </div>
+  </div>
+
+  <script>
+    function openWifiRoomModal() {
+      var modal = document.getElementById('wifiRoomModal');
+      var iframe = document.getElementById('wifiRoomIframe');
+      
+      modal.style.display = 'flex';
+      iframe.src = 'room_wifi.html'; // Asegúrate de que esta ruta sea correcta
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeWifiRoomModal() {
+      var modal = document.getElementById('wifiRoomModal');
+      var iframe = document.getElementById('wifiRoomIframe');
+
+      modal.style.display = 'none';
+      iframe.src = ''; 
+      document.body.style.overflow = 'auto';
+    }
+
+    function openSqlInjectionModal() {
+      var modal = document.getElementById('sqlInjectionModal');
+      var iframe = document.getElementById('sqlInjectionIframe');
+      
+      modal.style.display = 'flex';
+      // La imagen sugiere "Laboratorio: SQL Injection",
+      // por lo que asumo que la página se llama 'sql_injection_lab.html'
+      // Si tu archivo se llama diferente, ajústalo aquí.
+      iframe.src = 'sql_injection_lab.html'; 
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeSqlInjectionModal() {
+      var modal = document.getElementById('sqlInjectionModal');
+      var iframe = document.getElementById('sqlInjectionIframe');
+
+      modal.style.display = 'none';
+      iframe.src = ''; 
+      document.body.style.overflow = 'auto';
+    }
+
+    // Opcional: Cerrar cualquier modal si se presiona la tecla ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeWifiRoomModal(); // Intenta cerrar el modal de Wi-Fi
+            closeSqlInjectionModal(); // Intenta cerrar el modal de SQL Injection
+        }
+    });
+
+    // Opcional: Cerrar cualquier modal si se hace clic fuera del contenido (en el overlay)
+    document.getElementById('wifiRoomModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeWifiRoomModal();
+        }
+    });
+
+    document.getElementById('sqlInjectionModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeSqlInjectionModal();
+        }
+    });
+  </script>
 </body>
 </html>
