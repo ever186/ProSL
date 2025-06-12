@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SecureLab - Seguridad en Wi-Fi</title>
+  <title>Análisis Forense de Redes | El Arte del Sniffing</title>
   <style>
     body {
       background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
@@ -25,6 +25,13 @@
     .header h1 {
       font-size: 2.2em;
       text-shadow: 0 0 10px #00ff00;
+      margin: 0;
+    }
+     .header p {
+      font-size: 1.1em;
+      color: #00ffff;
+      max-width: 800px;
+      margin: 10px auto 0;
     }
     .section {
       background: rgba(0, 30, 0, 0.2);
@@ -36,20 +43,60 @@
     .section h2 {
       color: #00ffff;
       border-bottom: 1px solid #00ffff;
+      padding-bottom: 10px;
+      margin-top: 0;
       margin-bottom: 15px;
+      font-size: 1.8em;
+    }
+    .section h3 {
+        color: #00ff00;
+        font-size: 1.4em;
+        margin-top: 25px;
+        margin-bottom: 10px;
     }
     .section p, .section ul, .section li {
       color: #ccffcc;
       line-height: 1.7;
+      font-size: 1.1em;
+    }
+    ul {
+      list-style-type: '» ';
+      padding-left: 20px;
     }
     pre {
       background: #000;
       color: #00ff00;
-      padding: 10px;
+      padding: 15px;
       border: 1px solid #00ff00;
+      border-left: 4px solid #00ff00;
       border-radius: 5px;
       overflow-x: auto;
-      margin-bottom: 15px;
+      margin: 20px 0;
+      font-size: 1.1em;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    code {
+      background: rgba(0, 255, 0, 0.1);
+      color: #00ff00;
+      padding: 2px 5px;
+    }
+    .image-container {
+      margin: 25px 0;
+      text-align: center;
+      border: 1px solid #00cc00;
+      padding: 10px;
+      background: rgba(0,0,0,0.3);
+    }
+    .image-container img {
+      max-width: 100%;
+      height: auto;
+    }
+    .image-container figcaption {
+      margin-top: 10px;
+      color: #00ffff;
+      font-style: italic;
+      font-size: 0.9em;
     }
     footer {
       text-align: center;
@@ -62,60 +109,103 @@
       color: #00ffff;
       text-decoration: none;
     }
+    footer a:hover {
+        text-decoration: underline;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h1>Seguridad en Redes Wi-Fi</h1>
-    </div>
+    <header class="header">
+      <h1>Análisis Forense de Redes: El Arte del Sniffing</h1>
+      <p>Una inmersión profunda en la captura y análisis de tráfico con Wireshark y TShark.</p>
+    </header>
 
-    <div class="section">
-      <h2>¿Qué es la Auditoría Wi-Fi?</h2>
-      <p>La auditoría Wi-Fi consiste en analizar una red inalámbrica para identificar vulnerabilidades de seguridad, evaluar el nivel de protección y comprobar si es susceptible a ataques como fuerza bruta, desautenticación, o redes falsas (Evil Twin).</p>
-    </div>
+    <main>
+      <section class="section">
+        <h2>¿Qué es el Sniffing de Red?</h2>
+        <p>El <strong>sniffing de red</strong> (o captura de paquetes) es el proceso de interceptar, registrar y analizar el tráfico de datos que fluye a través de una red informática. Es una técnica fundamental en ciberseguridad, utilizada tanto por profesionales para defender infraestructuras como por actores maliciosos para atacarlas.</p>
+        <p>Los usos legítimos y cruciales incluyen:</p>
+        <ul>
+          <li><strong>Diagnóstico y solución de problemas:</strong> Identificar por qué una aplicación es lenta o por qué fallan las conexiones.</li>
+          <li><strong>Análisis de rendimiento:</strong> Medir latencia, pérdida de paquetes y optimizar el flujo de la red.</li>
+          <li><strong>Monitoreo de seguridad:</strong> Detectar actividad anómala, intrusiones o exfiltración de datos.</li>
+          <li><strong>Ingeniería inversa:</strong> Comprender cómo los protocolos y las aplicaciones se comunican realmente.</li>
+        </ul>
+        <p>Éticamente, el sniffing solo debe realizarse en redes de su propiedad o con permiso explícito. El uso no autorizado para espiar comunicaciones es ilegal.</p>
+      </section>
 
-    <div class="section">
-      <h2>¿Cómo Funciona?</h2>
-      <p>El proceso implica el uso de una tarjeta de red en modo monitor para interceptar paquetes de datos, con el objetivo de capturar el "handshake" (proceso de autenticación entre un dispositivo y el punto de acceso). Una vez obtenido, se intenta descifrar la clave usando ataques por diccionario.</p>
-    </div>
+      <section class="section">
+        <h2>Herramientas del Oficio: Wireshark y TShark</h2>
+        <p>Aunque existen muchas herramientas, el ecosistema de <strong>Wireshark</strong> es el estándar de oro indiscutible. Proporciona dos sabores para adaptarse a cada necesidad:</p>
+        <ul>
+            <li><strong>Wireshark:</strong> El analizador con Interfaz Gráfica (GUI), ideal para un análisis visual, profundo e interactivo.</li>
+            <li><strong>TShark:</strong> La versión de línea de comandos (CLI). Es la herramienta preferida para la captura en servidores remotos, automatización y scripting.</li>
+        </ul>
+      </section>
 
-    <div class="section">
-      <h2>🧪 Paso a Paso para Auditar una Red Wi-Fi</h2>
+      <section class="section">
+        <h2>🔬 Wireshark en Acción: Análisis Visual</h2>
+        
+        <h3>Paso 1: Captura de Tráfico en Vivo</h3>
+        <p>Al iniciar Wireshark, selecciona la interfaz de red a través de la cual fluye el tráfico de interés (ej. <code>Ethernet</code> o <code>Wi-Fi</code>) y haz doble clic para comenzar.</p>
+        <figure class="image-container">
+          <img src="https://www.wireshark.org/docs/wsug_html_chunked/images/ws-main-window-selection.png" alt="Pantalla de bienvenida de Wireshark.">
+          <figcaption>Fig 1: Selección de interfaz de red en Wireshark.</figcaption>
+        </figure>
 
-      <h3>Paso 1: Identificar tu interfaz de red</h3>
-      <p>Usa el siguiente comando para ver tus interfaces de red disponibles:</p>
-      <pre>ip a</pre>
-      <p>Identifica tu tarjeta Wi-Fi, normalmente llamada <code>wlan0</code>.</p>
+        <h3>Paso 2: Filtrado y Análisis de Paquetes</h3>
+        <p>Para encontrar información relevante, los <strong>filtros de visualización</strong> son esenciales. Por ejemplo, para aislar tráfico web no cifrado, escribe <code>http</code> en la barra de filtros.</p>
+        <figure class="image-container">
+          <img src="https://i.stack.imgur.com/8aeS7.png" alt="Ventana de Wireshark filtrando paquetes HTTP.">
+          <figcaption>Fig 2: Analizando una solicitud GET con el filtro "http".</figcaption>
+        </figure>
+        
+        <h3>Paso 3: Reconstrucción de Conversaciones</h3>
+        <p>Para ver una conversación completa, haz clic derecho en cualquier paquete de interés y selecciona <code>Follow > TCP Stream</code>. Esto reconstruye los datos tal como la aplicación los vio.</p>
+        <figure class="image-container">
+          <img src="https://www.e-technologia.com/wp-content/uploads/2021/07/Follow-TCP-Stream.jpg" alt="Ventana de 'Follow TCP Stream' en Wireshark.">
+          <figcaption>Fig 3: La función "Follow TCP Stream" reconstruyendo una sesión HTTP.</figcaption>
+        </figure>
+      </section>
 
-      <h3>Paso 2: Activar modo monitor</h3>
-      <pre>sudo airmon-ng start wlan0</pre>
-      <p>Este comando pone la interfaz en modo monitor, permitiendo escuchar todo el tráfico inalámbrico del entorno.</p>
+      <section class="section">
+        <h2>#_ TShark en la CLI: Poder y Automatización</h2>
 
-      <h3>Paso 3: Escanear redes cercanas</h3>
-      <pre>sudo airodump-ng wlan0mon</pre>
-      <p>Este comando lista todas las redes inalámbricas disponibles y los dispositivos conectados a ellas. Toma nota del canal (<code>CH</code>) y la dirección BSSID (MAC del router).</p>
+        <h3>Ejemplo 1: Captura Básica a un Archivo</h3>
+        <p>Captura tráfico en una interfaz y guárdalo en un archivo <code>.pcapng</code> para su posterior análisis.</p>
+        <pre>sudo tshark -i eth0 -w http_capture.pcapng</pre>
+        <p><code>-i eth0</code>: Especifica la interfaz. <br><code>-w http_capture.pcapng</code>: Escribe la captura a un archivo.</p>
+        
+        <h3>Ejemplo 2: Filtrado en Tiempo Real</h3>
+        <p>Observa las consultas DNS en tu red en tiempo real, extrayendo solo el nombre del dominio solicitado.</p>
+        <pre>sudo tshark -i wlan0 -f "udp port 53" -Y "dns.qry.name" -T fields -e dns.qry.name</pre>
+        <p><code>-f "udp port 53"</code>: Filtro de captura, muy eficiente.<br><code>-Y "dns.qry.name"</code>: Filtro de visualización.<br><code>-T fields -e dns.qry.name</code>: Extrae y muestra solo el campo especificado.</p>
+        <figure class="image-container">
+            <img src="https://i.ytimg.com/vi/j5gUjA-By4s/maxresdefault.jpg" alt="Salida de TShark en una terminal.">
+            <figcaption>Fig 4: Salida de TShark en una terminal.</figcaption>
+        </figure>
 
-      <h3>Paso 4: Enfocar la captura en una red específica</h3>
-      <pre>sudo airodump-ng -c [canal] --bssid [BSSID] -w captura wlan0mon</pre>
-      <p>Reemplaza <code>[canal]</code> y <code>[BSSID]</code> por los valores específicos. Esto comienza la captura de tráfico de esa red específica en un archivo llamado <code>captura.cap</code>.</p>
+        <h3>Ejemplo 3: Extracción de Campos desde un Archivo</h3>
+        <p>Procesa capturas y extrae solo la información que necesitas, como las IP de origen y destino.</p>
+        <pre>tshark -r network_traffic.pcapng -T fields -e ip.src -e ip.dst</pre>
+        <p><code>-r network_traffic.pcapng</code>: Lee desde un archivo.<br><code>-T fields -e ip.src -e ip.dst</code>: Extrae los campos de IP de origen y destino.</p>
+      </section>
 
-      <h3>Paso 5: Forzar desconexión (ataque deauth)</h3>
-      <pre>sudo aireplay-ng --deauth 10 -a [BSSID] wlan0mon</pre>
-      <p>Este comando desconecta a los clientes del router. Cuando se reconectan, se genera un handshake que será capturado por <code>airodump-ng</code>.</p>
-
-      <h3>Paso 6: Verificar si se capturó el handshake</h3>
-      <p>El archivo generado por <code>airodump-ng</code> indicará "WPA handshake:" en la parte superior derecha si se ha capturado correctamente.</p>
-
-      <h3>Paso 7: Romper la clave usando diccionario</h3>
-      <pre>aircrack-ng -w rockyou.txt -b [BSSID] captura.cap</pre>
-      <p>Este paso intenta descifrar la clave WPA utilizando un diccionario de contraseñas como <code>rockyou.txt</code>. Si la clave está en el diccionario, será revelada.</p>
-
-    </div>
+      <section class="section">
+        <h2>Defensa Contra el Sniffing Malicioso</h2>
+        <p>La defensa principal contra el sniffing es la <strong>CRIPTOGRAFÍA</strong>.</p>
+        <ul>
+            <li><strong>HTTPS en todas partes:</strong> El cifrado TLS/SSL protege los datos web.</li>
+            <li><strong>DNS sobre HTTPS (DoH):</strong> Cifra tus consultas de DNS para que nadie vea qué sitios visitas.</li>
+            <li><strong>Redes Privadas Virtuales (VPN):</strong> Crea un túnel cifrado para todo tu tráfico, ideal para redes no confiables.</li>
+            <li><strong>Usa WPA3:</strong> Ofrece protección superior contra ataques de captura de handshake en redes Wi-Fi.</li>
+        </ul>
+      </section>
+    </main>
 
     <footer>
-     La seguridad es un proceso, no un producto.
-      <a href="https://github.com/ever186" target="_blank">GitHub</a>
+      <p>Página rediseñada por un experto en ciberseguridad. Creador original: EJ | <a href="https://github.com/ever186" target="_blank">GitHub Original</a></p>
     </footer>
   </div>
 </body>
