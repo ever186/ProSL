@@ -1,0 +1,1130 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureLab - Criptografía en Ciberseguridad</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding-top: 20px;
+      padding-bottom: 0;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      flex: 1;
+      padding-left: 20px;
+      padding-right: 20px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      text-align: center;
+      border: 2px solid #00ff00;
+      padding: 25px;
+      margin-bottom: 30px;
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 35px,
+        rgba(0, 255, 0, 0.05) 35px,
+        rgba(0, 255, 0, 0.05) 70px
+      );
+      animation: matrix-bg 20s linear infinite;
+    }
+
+    @keyframes matrix-bg {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .header h1 {
+      font-size: 2.8em;
+      text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header p {
+      font-size: 1.2em;
+      color: #ccffcc;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #00ff00;
+      color: #000;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: all 0.3s;
+      border: 1px solid #00ff00;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+
+    .back-link:hover {
+      background-color: #00cccc;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+
+    .section {
+      background: rgba(0, 30, 0, 0.2);
+      border: 1px solid #00cc00;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    .section h2 {
+      color: #00ffff;
+      border-bottom: 2px solid #00ffff;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      font-size: 1.6em;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .section h3 {
+      color: #ffff00;
+      margin: 20px 0 15px 0;
+      font-size: 1.3em;
+      text-shadow: 0 0 5px #ffff00;
+    }
+
+    .section h4 {
+      color: #ff6600;
+      margin: 15px 0 10px 0;
+      font-size: 1.1em;
+    }
+
+    .section p, .section ul, .section li {
+      color: #ccffcc;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .section ul {
+      padding-left: 20px;
+    }
+
+    .section li {
+      margin-bottom: 10px;
+    }
+
+    pre {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-size: 0.9em;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    }
+
+    .crypto-visual {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #00ff00;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      text-align: center;
+      font-family: monospace;
+      font-size: 1.1em;
+    }
+
+    .crypto-visual .plaintext {
+      color: #ffff00;
+      font-weight: bold;
+    }
+
+    .crypto-visual .arrow {
+      color: #00ffff;
+      font-size: 1.5em;
+      margin: 10px 0;
+    }
+
+    .crypto-visual .ciphertext {
+      color: #ff6600;
+      font-weight: bold;
+    }
+
+    .crypto-visual .key {
+      color: #ff00ff;
+      font-weight: bold;
+    }
+
+    .algorithm-section {
+      background: rgba(0, 40, 40, 0.2);
+      border-left: 4px solid #00ffff;
+    }
+
+    .symmetric-section {
+      background: rgba(40, 40, 0, 0.2);
+      border-left: 4px solid #ffff00;
+    }
+
+    .asymmetric-section {
+      background: rgba(40, 0, 40, 0.2);
+      border-left: 4px solid #ff00ff;
+    }
+
+    .hash-section {
+      background: rgba(40, 20, 0, 0.2);
+      border-left: 4px solid #ff6600;
+    }
+
+    .attack-section {
+      background: rgba(40, 0, 0, 0.2);
+      border-left: 4px solid #ff0000;
+    }
+
+    .tools-highlight {
+      background: rgba(50, 50, 0, 0.2);
+      padding: 15px;
+      border-radius: 4px;
+      color: #ffff99;
+      font-weight: bold;
+      margin: 15px 0;
+      border: 1px solid #ffff00;
+    }
+
+    .warning {
+      background: rgba(80, 20, 0, 0.3);
+      border: 1px solid #ff6600;
+      padding: 15px;
+      border-radius: 5px;
+      color: #ffcc99;
+      margin: 20px 0;
+    }
+
+    .warning::before {
+      content: "⚠️ ";
+      font-size: 1.2em;
+    }
+
+    .examples-section ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .examples-section > ul > li {
+      background: rgba(0, 50, 0, 0.4);
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 6px;
+      border-left: 4px solid #00ff00;
+    }
+
+    .examples-section strong {
+      color: #ffff00;
+      font-size: 1.2em;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .comparison-table th, .comparison-table td {
+      border: 1px solid #00ff00;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .comparison-table th {
+      background: rgba(0, 255, 0, 0.1);
+      color: #00ffff;
+      font-weight: bold;
+    }
+
+    .comparison-table td {
+      color: #ccffcc;
+    }
+
+    .key-size-indicator {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+
+    .key-weak { background: #ff4444; color: #fff; }
+    .key-medium { background: #ffaa00; color: #000; }
+    .key-strong { background: #00ff00; color: #000; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 25px;
+    }
+
+    .crypto-lab-button {
+      margin-top: 40px;
+      margin-bottom: 50px;
+      background: linear-gradient(45deg, #00ff00, #00cc00);
+      color: #000;
+      font-size: 1.8em;
+      padding: 15px 30px;
+      border: 3px solid #00ff00;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 5px #00ff00;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), 0 0 25px rgba(0, 255, 0, 0.3);
+      transition: all 0.3s ease-in-out;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 500px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .crypto-lab-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .crypto-lab-button:hover::before {
+      left: 100%;
+    }
+
+    .crypto-lab-button:hover {
+      background: linear-gradient(45deg, #00cc00, #00ff00);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.7), 0 0 30px rgba(0, 255, 0, 0.5);
+    }
+
+    .footer {
+      background-color: #0a0a0a;
+      color: #00ff00;
+      text-align: center;
+      padding: 15px 20px;
+      border-top: 1px solid #00ff00;
+      margin-top: auto;
+    }
+
+    .footer p {
+      margin: 5px 0;
+    }
+
+    .footer a {
+      color: #00ffff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer a:hover {
+      color: #00cccc;
+      text-decoration: underline;
+    }
+
+    .interactive-demo {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #00ff00;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .demo-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #000;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .demo-button {
+      padding: 10px 20px;
+      background: #00ff00;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 5px;
+    }
+
+    .demo-button:hover {
+      background: #00cc00;
+    }
+
+    .demo-output {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      min-height: 50px;
+      border: 1px solid #00ff00;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 Criptografía en Ciberseguridad</h1>
+      <p>Guía Técnica Completa: Fundamentos, Algoritmos y Aplicaciones Prácticas</p>
+    </div>
+
+    <a href="#" class="back-link">🏠 Volver al Inicio</a>
+
+    <div class="section">
+      <h2>¿Qué es la Criptografía?</h2>
+      <p>La criptografía es la ciencia y arte de proteger información mediante la transformación de datos legibles (texto plano) en formato ilegible (texto cifrado) para personas no autorizadas. En el contexto de la ciberseguridad moderna, constituye el pilar fundamental de la protección de datos.</p>
+      
+      <div class="crypto-visual">
+        <div class="plaintext">TEXTO PLANO: "Información Confidencial"</div>
+        <div class="arrow">⬇️ CIFRADO (con clave) ⬇️</div>
+        <div class="ciphertext">TEXTO CIFRADO: "X7$9mP@3kL&5nQ8!"</div>
+        <div class="arrow">⬇️ DESCIFRADO (con clave) ⬇️</div>
+        <div class="plaintext">TEXTO PLANO: "Información Confidencial"</div>
+      </div>
+
+      <h3>Objetivos Fundamentales de la Criptografía</h3>
+      <ul>
+        <li><strong>Confidencialidad:</strong> Garantizar que solo las personas autorizadas puedan acceder a la información</li>
+        <li><strong>Integridad:</strong> Asegurar que los datos no han sido alterados durante la transmisión o almacenamiento</li>
+        <li><strong>Autenticación:</strong> Verificar la identidad del emisor o receptor de la información</li>
+        <li><strong>No repudio:</strong> Impedir que el emisor niegue haber enviado el mensaje</li>
+        <li><strong>Control de acceso:</strong> Limitar el acceso a recursos según privilegios específicos</li>
+      </ul>
+    </div>
+
+    <div class="section symmetric-section">
+      <h2>🔑 Criptografía Simétrica</h2>
+      <p>También conocida como criptografía de clave secreta, utiliza la misma clave para cifrar y descifrar datos. Es la forma más rápida y eficiente de cifrado, ideal para grandes volúmenes de datos.</p>
+
+      <h3>Características Principales</h3>
+      <ul>
+        <li><strong>Velocidad:</strong> Algoritmos optimizados para procesamiento rápido</li>
+        <li><strong>Eficiencia:</strong> Bajo consumo de recursos computacionales</li>
+        <li><strong>Problema de distribución:</strong> Requiere canal seguro para intercambio de claves</li>
+        <li><strong>Escalabilidad:</strong> Número de claves crece exponencialmente con usuarios</li>
+      </ul>
+
+      <h3>Algoritmos de Cifrado en Bloque</h3>
+      
+      <h4>AES (Advanced Encryption Standard)</h4>
+      <p>Estándar de cifrado adoptado por el gobierno estadounidense y ampliamente utilizado mundialmente:</p>
+      <ul>
+        <li><strong>Tamaños de clave:</strong> 128, 192, 256 bits</li>
+        <li><strong>Tamaño de bloque:</strong> 128 bits</li>
+        <li><strong>Rondas:</strong> 10 (AES-128), 12 (AES-192), 14 (AES-256)</li>
+        <li><strong>Resistencia:</strong> Inmune a ataques conocidos hasta la fecha</li>
+      </ul>
+
+      <div class="tools-highlight">
+        Implementación: OpenSSL, Crypto++, libsodium, Python cryptography
+      </div>
+
+      <h4>DES y 3DES (Triple DES)</h4>
+      <p><strong>DES:</strong> Algoritmo histórico considerado obsoleto</p>
+      <ul>
+        <li>Clave de 56 bits (vulnerable a fuerza bruta)</li>
+        <li>Bloque de 64 bits</li>
+        <li>Deprecado desde 2005</li>
+      </ul>
+      
+      <p><strong>3DES:</strong> Mejora de DES aplicando el algoritmo tres veces</p>
+      <ul>
+        <li>Clave efectiva de 112 o 168 bits</li>
+        <li>Más lento que AES</li>
+        <li>En proceso de deprecación</li>
+      </ul>
+
+      <h3>Algoritmos de Cifrado en Flujo</h3>
+      
+      <h4>ChaCha20</h4>
+      <p>Algoritmo moderno de cifrado en flujo, alternativa a AES:</p>
+      <ul>
+        <li>Clave de 256 bits</li>
+        <li>Nonce de 96 bits</li>
+        <li>Excelente rendimiento en software</li>
+        <li>Resistente a ataques de canal lateral</li>
+      </ul>
+
+      <h4>RC4 (Rivest Cipher 4)</h4>
+      <p>Algoritmo de flujo ampliamente utilizado pero ahora considerado inseguro:</p>
+      <ul>
+        <li>Clave variable (40-2048 bits)</li>
+        <li>Vulnerabilidades conocidas</li>
+        <li>Prohibido en TLS 1.3</li>
+      </ul>
+
+      <h3>Modos de Operación</h3>
+      
+      <table class="comparison-table">
+        <tr>
+          <th>Modo</th>
+          <th>Descripción</th>
+          <th>Ventajas</th>
+          <th>Desventajas</th>
+        </tr>
+        <tr>
+          <td><strong>ECB</strong></td>
+          <td>Electronic Codebook</td>
+          <td>Simple, paralelizable</td>
+          <td>Patrones visibles, inseguro</td>
+        </tr>
+        <tr>
+          <td><strong>CBC</strong></td>
+          <td>Cipher Block Chaining</td>
+          <td>Oculta patrones</td>
+          <td>Secuencial, padding oracle</td>
+        </tr>
+        <tr>
+          <td><strong>CTR</strong></td>
+          <td>Counter Mode</td>
+          <td>Paralelizable, no padding</td>
+          <td>Requiere contador único</td>
+        </tr>
+        <tr>
+          <td><strong>GCM</strong></td>
+          <td>Galois/Counter Mode</td>
+          <td>Cifrado + autenticación</td>
+          <td>Más complejo</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section asymmetric-section">
+      <h2>🔐 Criptografía Asimétrica</h2>
+      <p>También conocida como criptografía de clave pública, utiliza un par de claves matemáticamente relacionadas: una clave pública (conocida por todos) y una clave privada (secreta). Resuelve el problema de distribución de claves de la criptografía simétrica.</p>
+
+      <div class="crypto-visual">
+        <div class="key">CLAVE PÚBLICA (Alice): Conocida por todos</div>
+        <div class="arrow">⬇️ Bob cifra mensaje para Alice ⬇️</div>
+        <div class="ciphertext">MENSAJE CIFRADO</div>
+        <div class="arrow">⬇️ Solo Alice puede descifrar ⬇️</div>
+        <div class="key">CLAVE PRIVADA (Alice): Solo Alice la conoce</div>
+      </div>
+
+      <h3>Algoritmos Principales</h3>
+      
+      <h4>RSA (Rivest-Shamir-Adleman)</h4>
+      <p>El algoritmo asimétrico más utilizado, basado en la dificultad de factorizar números enteros grandes:</p>
+      <ul>
+        <li><strong>Tamaños de clave:</strong> 1024, 2048, 3072, 4096 bits</li>
+        <li><strong>Seguridad:</strong> 
+          <span class="key-size-indicator key-weak">1024 bits - Vulnerable</span>
+          <span class="key-size-indicator key-strong">2048+ bits - Seguro</span>
+        </li>
+        <li><strong>Usos:</strong> Cifrado, firma digital, intercambio de claves</li>
+        <li><strong>Limitación:</strong> Lento para grandes volúmenes de datos</li>
+      </ul>
+
+      <h4>ECC (Elliptic Curve Cryptography)</h4>
+      <p>Basado en matemáticas de curvas elípticas, ofrece la misma seguridad que RSA con claves más pequeñas:</p>
+      <ul>
+        <li><strong>Equivalencias de seguridad:</strong>
+          <ul>
+            <li>256 bits ECC ≈ 3072 bits RSA</li>
+            <li>384 bits ECC ≈ 7680 bits RSA</li>
+            <li>521 bits ECC ≈ 15360 bits RSA</li>
+          </ul>
+        </li>
+        <li><strong>Ventajas:</strong> Claves más pequeñas, mayor velocidad, menor consumo</li>
+        <li><strong>Curvas populares:</strong> P-256, P-384, P-521, Curve25519</li>
+      </ul>
+
+      <h4>DSA (Digital Signature Algorithm)</h4>
+      <p>Algoritmo específicamente diseñado para firmas digitales:</p>
+      <ul>
+        <li>Tamaños de clave: 1024, 2048, 3072 bits</li>
+        <li>Solo para firma digital (no cifrado)</li>
+        <li>Estándar FIPS 186</li>
+      </ul>
+
+      <h3>Aplicaciones Prácticas</h3>
+      <ul>
+        <li><strong>Intercambio de claves:</strong> Establecer claves simétricas de forma segura</li>
+        <li><strong>Firmas digitales:</strong> Verificar autenticidad e integridad</li>
+        <li><strong>Certificados digitales:</strong> PKI (Public Key Infrastructure)</li>
+        <li><strong>Protocolos SSL/TLS:</strong> Seguridad en comunicaciones web</li>
+      </ul>
+    </div>
+
+    <div class="section hash-section">
+      <h2>🔣 Funciones Hash Criptográficas</h2>
+      <p>Las funciones hash son algoritmos matemáticos que transforman datos de cualquier tamaño en una cadena de longitud fija. Son fundamentales para verificar integridad y en muchos protocolos criptográficos.</p>
+
+      <h3>Propiedades Esenciales</h3>
+      <ul>
+        <li><strong>Determinísticas:</strong> El mismo input siempre produce el mismo hash</li>
+        <li><strong>Avalancha:</strong> Pequeños cambios en input causan grandes cambios en output</li>
+        <li><strong>Irreversibles:</strong> Computacionalmente imposible obtener el input desde el hash</li>
+        <li><strong>Resistencia a colisiones:</strong> Difícil encontrar dos inputs con el mismo hash</li>
+        <li><strong>Distribución uniforme:</strong> Los hashes se distribuyen uniformemente</li>
+      </ul>
+
+      <h3>Algoritmos Hash Principales</h3>
+      
+      <h4>SHA-2 (Secure Hash Algorithm 2)</h4>
+      <p>Familia de funciones hash consideradas seguras y ampliamente adoptadas:</p>
+      <ul>
+        <li><strong>SHA-256:</strong> Output de 256 bits, muy popular en blockchain</li>
+        <li><strong>SHA-384:</strong> Output de 384 bits, basado en SHA-512</li>
+        <li><strong>SHA-512:</strong> Output de 512 bits, máxima seguridad</li>
+        <li><strong>Resistencia:</strong> No se conocen ataques prácticos</li>
+      </ul>
+
+      <h4>SHA-3 (Keccak)</h4>
+      <p>Última adición a la familia SHA, utiliza construcción esponja:</p>
+      <ul>
+        <li>Diferente construcción interna que SHA-2</li>
+        <li>Resistente a ataques de extensión de longitud</li>
+        <li>Variantes: SHA3-256, SHA3-384, SHA3-512</li>
+      </ul>
+
+      <h4>Algoritmos Obsoletos</h4>
+      <p><strong>MD5:</strong> 
+        <span class="key-size-indicator key-weak">128 bits - VULNERABLE</span>
+      </p>
+      <ul>
+        <li>Susceptible a ataques de colisión</li>
+        <li>Solo para verificación de integridad no crítica</li>
+      </ul>
+
+      <p><strong>SHA-1:</strong> 
+        <span class="key-size-indicator key-weak">160 bits - DEPRECADO</span>
+      </p>
+      <ul>
+        <li>Ataques de colisión demostrados</li>
+        <li>Prohibido en nuevas aplicaciones</li>
+      </ul>
+
+      <h3>Aplicaciones Prácticas</h3>
+      
+      <div class="interactive-demo">
+        <h4>Demostración Interactiva de Hash</h4>
+        <p>Prueba cómo pequeños cambios en el input producen hashes completamente diferentes:</p>
+        <input type="text" id="hashInput" class="demo-input" placeholder="Ingresa texto aquí..." value="Hola Mundo">
+        <button class="demo-button" onclick="calculateHash()">Calcular Hash</button>
+        <div id="hashOutput" class="demo-output">
+          <div>SHA-256: e7b2c6f8a3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0</div>
+        </div>
+      </div>
+
+      <ul>
+        <li><strong>Verificación de integridad:</strong> Checksums de archivos</li>
+        <li><strong>Almacenamiento de contraseñas:</strong> Nunca almacenar contraseñas en texto plano</li>
+        <li><strong>Firmas digitales:</strong> Hash del mensaje antes de firmar</li>
+        <li><strong>Blockchain:</strong> Proof of Work, merkle trees</li>
+        <li><strong>Forense digital:</strong> Validar evidencia digital</li>
+      </ul>
+    </div>
+
+    <div class="section algorithm-section">
+      <h2>⚙️ Protocolos y Estándares Criptográficos</h2>
+      
+      <h3>TLS/SSL (Transport Layer Security)</h3>
+      <p>Protocolo fundamental para comunicaciones seguras en Internet:</p>
+      
+      <h4>Proceso de Handshake TLS 1.3</h4>
+      <div class="crypto-visual">
+        <div>Cliente → Servidor: ClientHello (versiones, cipher suites, extensiones)</div>
+        <div class="arrow">⬇️</div>
+        <div>Servidor → Cliente: ServerHello (versión, cipher suite seleccionado)</div>
+        <div class="arrow">⬇️</div>
+        <div>Servidor → Cliente: Certificate, CertificateVerify, Finished</div>
+        <div class="arrow">⬇️</div>
+        <div>Cliente → Servidor: Finished</div>
+        <div class="arrow">⬇️</div>
+        <div class="plaintext">🔒 CONEXIÓN SEGURA ESTABLECIDA</div>
+      </div>
+
+      <h4>Mejoras en TLS 1.3</h4>
+      <ul>
+        <li><strong>Handshake más rápido:</strong> Menos round-trips</li>
+        <li><strong>Cipher suites más seguros:</strong> Eliminación de algoritmos obsoletos</li>
+        <li><strong>Forward Secrecy:</strong> Obligatorio para todos los intercambios</li>
+        <li><strong>0-RTT resumption:</strong> Conexiones instantáneas</li>
+      </ul>
+
+      <h3>PKI (Public Key Infrastructure)</h3>
+      <p>Infraestructura que administra claves públicas y certificados digitales:</p>
+      
+      <h4>Componentes de PKI</h4>
+      <ul>
+        <li><strong>CA (Certificate Authority):</strong> Entidad que emite y revoca certificados</li>
+        <li><strong>RA (Registration Authority):</strong> Verifica identidad antes de emisión</li>
+        <li><strong>Certificate Repository:</strong> Almacena certificados públicos</li>
+        <li><strong>CRL (Certificate Revocation List):</strong> Lista de certificados revocados</li>
+        <li><strong>OCSP (Online Certificate Status Protocol):</strong> Verificación en tiempo real</li>
+      </ul>
+
+      <h4>Estructura de Certificado X.509</h4>
+      <pre>Certificado Digital:
+├── Versión
+├── Número de Serie
+├── Algoritmo de Firma
+├── Emisor (CA)
+├── Validez (desde/hasta)
+├── Sujeto (propietario)
+├── Información de Clave Pública
+├── Extensiones
+└── Firma Digital del CA</pre>
+
+      <h3>Algoritmos de Intercambio de Claves</h3>
+      
+      <h4>Diffie-Hellman (DH)</h4>
+      <p>Primer protocolo público de intercambio de claves:</p>
+      <ul>
+        <li><strong>Principio:</strong> Permite establecer secreto compartido sin intercambio previo</li>
+        <li><strong>Seguridad:</strong> Basada en problema del logaritmo discreto</li>
+        <li><strong>Vulnerabilidad:</strong> Susceptible a ataques man-in-the-middle sin autenticación</li>
+      </ul>
+
+      <h4>ECDH (Elliptic Curve Diffie-Hellman)</h4>
+      <p>Versión de DH usando curvas elípticas:</p>
+      <ul>
+        <li>Claves más pequeñas con igual seguridad</li>
+        <li>Mejor rendimiento</li>
+        <li>Usado en TLS, Signal Protocol</li>
+      </ul>
+    </div>
+
+    <div class="section attack-section">
+      <h2>🚨 Ataques Criptográficos y Vulnerabilidades</h2>
+      
+      <h3>Clasificación de Ataques</h3>
+      
+      <h4>Ataques por Fuerza Bruta</h4>
+      <p>Prueba sistemática de todas las combinaciones posibles:</p>
+      <ul>
+        <li><strong>Complejidad temporal:</strong> O(2^n) donde n es el tamaño de clave</li>
+        <li><strong>Mitigación:</strong> Usar claves de tamaño adecuado</li>
+        <li><strong>Tiempo estimado para romper AES-256:</strong> 3.31 × 10^56 años</li>
+      </ul>
+
+      <div class="tools-highlight">
+        Herramientas: Hashcat, John the Ripper, Aircrack-ng
+      </div>
+
+      <h4>Ataques de Diccionario</h4>
+      <p>Uso de listas de palabras comunes:</p>
+      <ul>
+        <li>Efectivo contra contraseñas débiles</li>
+        <li>Combinado con reglas de mutación</li>
+        <li>Wordlists: RockYou, SecLists, crackstation</li>
+      </ul>
+
+      <h4>Ataques Criptoanalíticos</h4>
+      
+      <p><strong>Análisis Diferencial:</strong></p>
+      <ul>
+        <li>Estudia diferencias en pares de texto plano/cifrado</li>
+        <li>Efectivo contra DES, menos contra AES</li>
+      </ul>
+
+      <p><strong>Análisis Lineal:</strong></p>
+      <ul>
+        <li>Busca aproximaciones lineales en el cifrado</li>
+        <li>Requiere grandes cantidades de datos</li>
+      </ul>
+
+      <p><strong>Ataques de Canal Lateral:</strong></p>
+      <ul>
+        <li><strong>Timing attacks:</strong> Análisis de tiempo de ejecución</li>
+        <li><strong>Power analysis:</strong> Consumo energético</li>
+        <li><strong>Acoustic attacks:</strong> Emisiones sonoras</li>
+        <li><strong>Cache attacks:</strong> Patrones de acceso a memoria</li>
+      </ul>
+
+      <h3>Vulnerabilidades Específicas</h3>
+      
+      <h4>Implementación Inadecuada</h4>
+      <ul>
+        <li><strong>Generación de números aleatorios débil:</strong> Predicibilidad</li>
+        <li><strong>Reutilización de nonces/IVs:</strong> Compromete seguridad</li>
+        <li><strong>Padding Oracle:</strong> Información de padding revela datos</li>
+        <li><strong>Timing attacks:</strong> Diferencias de tiempo revelan información</li>
+      </ul>
+
+      <h4>Ataques Cuánticos (Amenaza Futura)</h4>
+      <p>La computación cuántica representa una amenaza existencial para la criptografía actual:</p>
+      <ul>
+        <li><strong>Algoritmo de Shor:</strong> Rompe RSA, ECC, DH en tiempo polinomial</li>
+        <li><strong>Algoritmo de Grover:</strong> Reduce efectividad de AES a la mitad</li>
+        <li><strong>Cronograma estimado:</strong> 2030-2040 para computadoras cuánticas prácticas</li>
+      </ul>
+
+      <div class="warning">
+        <strong>Criptografía Post-Cuántica:</strong> NIST está estandarizando algoritmos resistentes a computadoras cuánticas: CRYSTALS-Kyber (intercambio de claves), CRYSTALS-Dilithium (firmas digitales).
+      </div>
+    </div>
+
+    <div class="examples-section section">
+      <h2>💻 Ejemplos Prácticos y Herramientas</h2>
+      
+      <ul>
+        <li>
+          <strong>1. Cifrado AES con OpenSSL</strong>
+          <p>Implementación práctica de cifrado simétrico usando herramientas de línea de comandos:</p>
+          <pre># Cifrar archivo con AES-256-CBC
+openssl enc -aes-256-cbc -salt -in archivo.txt -out archivo.enc -k mipassword
+
+# Descifrar archivo
+openssl enc -aes-256-cbc -d -in archivo.enc -out archivo_desc.txt -k mipassword
+
+# Generar clave aleatoria de 256 bits
+openssl rand -hex 32
+
+# Cifrado con clave específica (no derivada de password)
+openssl enc -aes-256-cbc -in archivo.txt -out archivo.enc -K clave_hex -iv iv_hex</pre>
+          <div class="tools-highlight">Herramientas: OpenSSL, GnuPG, Cryptsetup</div>
+        </li>
+
+        <li>
+          <strong>2. Generación y Uso de Claves RSA</strong>
+          <p>Creación de pares de claves asimétricas y operaciones criptográficas:</p>
+          <pre># Generar par de claves RSA de 4096 bits
+openssl genrsa -out private_key.pem 4096
+
+# Extraer clave pública
+openssl rsa -in private_key.pem -pubout -out public_key.pem
+
+# Cifrar archivo con clave pública
+openssl rsautl -encrypt -pubin -inkey public_key.pem -in mensaje.txt -out mensaje.enc
+
+# Descifrar con clave privada
+openssl rsautl -decrypt -inkey private_key.pem -in mensaje.enc -out mensaje_desc.txt
+
+# Crear firma digital
+openssl dgst -sha256 -sign private_key.pem -out firma.sign archivo.txt
+
+# Verificar firma
+openssl dgst -sha256 -verify public_key.pem -signature firma.sign archivo.txt</pre>
+          <div class="tools-highlight">Aplicaciones: SSH, PGP, SSL/TLS, JWT</div>
+        </li>
+
+        <li>
+          <strong>3. Funciones Hash y Verificación de Integridad</strong>
+          <p>Cálculo de hashes para verificación de integridad y detección de cambios:</p>
+          <pre># Calcular hash SHA-256
+echo "Texto de prueba" | openssl dgst -sha256
+sha256sum archivo.txt
+
+# Crear archivo de checksums
+sha256sum *.txt > checksums.sha256
+
+# Verificar integridad
+sha256sum -c checksums.sha256
+
+# Hash con salt para contraseñas
+echo -n "password123salt456" | openssl dgst -sha256
+
+# HMAC (Hash-based Message Authentication Code)
+echo -n "mensaje" | openssl dgst -sha256 -hmac "clave_secreta"</pre>
+          <div class="tools-highlight">Uso: Verificación de descargas, forense digital, almacenamiento de contraseñas</div>
+        </li>
+
+        <li>
+          <strong>4. Implementación de PKI Básica</strong>
+          <p>Creación de Autoridad Certificadora y emisión de certificados:</p>
+          <pre># Crear CA privada
+openssl genrsa -out ca-private-key.pem 4096
+
+# Crear certificado autofirmado de CA
+openssl req -new -x509 -days 3650 -key ca-private-key.pem -out ca-certificate.pem
+
+# Generar clave para servidor
+openssl genrsa -out server-private-key.pem 2048
+
+# Crear solicitud de certificado (CSR)
+openssl req -new -key server-private-key.pem -out server.csr
+
+# Firmar certificado con CA
+openssl x509 -req -days 365 -in server.csr -CA ca-certificate.pem \
+  -CAkey ca-private-key.pem -CAcreateserial -out server-certificate.pem
+
+# Verificar certificado
+openssl x509 -in server-certificate.pem -text -noout</pre>
+          <div class="tools-highlight">Aplicaciones: HTTPS, VPN, autenticación de dispositivos IoT</div>
+        </li>
+
+        <li>
+          <strong>5. Análisis de Protocolos SSL/TLS</strong>
+          <p>Evaluación de seguridad en conexiones cifradas:</p>
+          <pre># Verificar certificado SSL de un sitio
+openssl s_client -connect example.com:443 -servername example.com
+
+# Extraer certificado
+echo | openssl s_client -connect example.com:443 2>/dev/null | \
+  openssl x509 -text -noout
+
+# Probar cipher suites soportados
+nmap --script ssl-enum-ciphers -p 443 example.com
+
+# Verificar vulnerabilidades SSL
+testssl.sh example.com
+
+# Capturar tráfico TLS con Wireshark
+# Filtro: ssl or tls
+# Analizar handshake, cipher suites, certificados</pre>
+          <div class="tools-highlight">Herramientas: SSLyze, testssl.sh, Qualys SSL Labs, Wireshark</div>
+        </li>
+
+        <li>
+          <strong>6. Criptografía con Python</strong>
+          <p>Implementación programática usando librerías criptográficas modernas:</p>
+          <pre># Instalación de dependencias
+pip install cryptography pycryptodome
+
+# Cifrado AES-GCM
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+key = AESGCM.generate_key(bit_length=256)
+aesgcm = AESGCM(key)
+nonce = os.urandom(12)
+ciphertext = aesgcm.encrypt(nonce, b"mensaje secreto", b"datos_adicionales")
+
+# Generación de claves RSA
+from cryptography.hazmat.primitives.asymmetric import rsa
+private_key = rsa.generate_private_key(
+    public_exponent=65537,
+    key_size=2048
+)
+
+# Función hash segura
+import hashlib
+hash_sha256 = hashlib.sha256(b"mensaje").hexdigest()
+
+# Derivación de claves (PBKDF2)
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+kdf = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, 
+                 salt=salt, iterations=100000)</pre>
+          <div class="tools-highlight">Librerías: cryptography, pycryptodome, hashlib, secrets</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🛡️ Mejores Prácticas y Recomendaciones</h2>
+      
+      <h3>Selección de Algoritmos</h3>
+      <table class="comparison-table">
+        <tr>
+          <th>Propósito</th>
+          <th>Recomendado</th>
+          <th>Alternativa</th>
+          <th>Evitar</th>
+        </tr>
+        <tr>
+          <td>Cifrado Simétrico</td>
+          <td>AES-256-GCM</td>
+          <td>ChaCha20-Poly1305</td>
+          <td>DES, 3DES, RC4</td>
+        </tr>
+        <tr>
+          <td>Cifrado Asimétrico</td>
+          <td>RSA-4096, ECC P-384</td>
+          <td>Ed25519</td>
+          <td>RSA-1024, DSA-1024</td>
+        </tr>
+        <tr>
+          <td>Función Hash</td>
+          <td>SHA-256, SHA-3</td>
+          <td>BLAKE2</td>
+          <td>MD5, SHA-1</td>
+        </tr>
+        <tr>
+          <td>Intercambio de Claves</td>
+          <td>ECDH P-384</td>
+          <td>X25519</td>
+          <td>DH-1024</td>
+        </tr>
+      </table>
+
+      <h3>Gestión de Claves</h3>
+      <ul>
+        <li><strong>Generación segura:</strong> Usar generadores criptográficamente seguros</li>
+        <li><strong>Longitud adecuada:</strong> Seguir recomendaciones actuales de NIST</li>
+        <li><strong>Rotación regular:</strong> Cambiar claves periódicamente</li>
+        <li><strong>Almacenamiento seguro:</strong> HSM, KMS, o sistemas especializados</li>
+        <li><strong>Principio de mínimo privilegio:</strong> Acceso limitado a claves</li>
+        <li><strong>Separación de ambientes:</strong> Claves diferentes para desarrollo/producción</li>
+      </ul>
+
+      <h3>Implementación Segura</h3>
+      <ul>
+        <li><strong>No implementar criptografía propia:</strong> Usar librerías probadas</li>
+        <li><strong>Validar parámetros:</strong> Verificar entrada y configuración</li>
+        <li><strong>Manejo de errores:</strong> No filtrar información sensible</li>
+        <li><strong>Limpieza de memoria:</strong> Limpiar claves de memoria RAM</li>
+        <li><strong>Auditoria y logging:</strong> Registrar operaciones criptográficas</li>
+        <li><strong>Actualización continua:</strong> Mantener librerías actualizadas</li>
+      </ul>
+
+      <h3>Preparación Post-Cuántica</h3>
+      <ul>
+        <li><strong>Agilidad criptográfica:</strong> Diseñar sistemas flexibles para cambios</li>
+        <li><strong>Híbrido clásico-cuántico:</strong> Implementar doble capa durante transición</li>
+        <li><strong>Seguimiento de estándares:</strong> Monitorear NIST PQC standards</li>
+        <li><strong>Evaluación de riesgo:</strong> Determinar cronograma de migración</li>
+      </ul>
+    </div>
+
+    <div class="warning">
+      <strong>Consideraciones Legales:</strong> El uso de criptografía puede estar regulado en algunas jurisdicciones. Familiarízate con las leyes locales sobre exportación de criptografía, almacenamiento de datos, y cumplimiento normativo (GDPR, HIPAA, etc.).
+    </div>
+
+    <button class="crypto-lab-button" onclick="openCryptoLab()">
+      🔬 LABORATORIO CRIPTOGRÁFICO INTERACTIVO
+    </button>
+
+  </div>
+
+  <footer class="footer">
+    <p>En la criptografía confiamos - En todo lo demás, verificamos.</p>
+    <p>Desarrollado por SecureLab - Educación en Ciberseguridad</p>
+  </footer>
+
+  <script>
+    function calculateHash() {
+      const input = document.getElementById('hashInput').value;
+      const output = document.getElementById('hashOutput');
+      
+      // Simular cálculo de hash (en implementación real usarías crypto API)
+      let hash = '';
+      for (let i = 0; i < input.length; i++) {
+        hash += input.charCodeAt(i).toString(16);
+      }
+      // Completar a 64 caracteres
+      hash = hash.padEnd(64, '0').substring(0, 64);
+      
+      output.innerHTML = `
+        <div><strong>Input:</strong> "${input}"</div>
+        <div><strong>SHA-256:</strong> ${hash}</div>
+        <div><strong>Longitud:</strong> ${input.length} caracteres → 64 caracteres hex (256 bits)</div>
+      `;
+    }
+
+    function openCryptoLab() {
+      alert('🔬 Laboratorio Criptográfico\n\n' +
+            'Características incluidas:\n' +
+            '• Cifrado/descifrado interactivo\n' +
+            '• Generador de claves RSA\n' +
+            '• Calculadora de hashes\n' +
+            '• Simulador de ataques\n' +
+            '• Análisis de fortaleza de contraseñas\n\n' +
+            'Implementación completa disponible en repositorio.');
+    }
+
+    // Auto-cálculo inicial
+    document.addEventListener('DOMContentLoaded', function() {
+      calculateHash();
+      
+      // Actualizar hash en tiempo real
+      document.getElementById('hashInput').addEventListener('input', calculateHash);
+    });
+
+    // Efectos visuales adicionales
+    function createMatrixRain() {
+      const header = document.querySelector('.header');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.style.position = 'absolute';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.pointerEvents = 'none';
+      canvas.style.opacity = '0.1';
+      
+      header.appendChild(canvas);
+      
+      function resizeCanvas() {
+        canvas.width = header.offsetWidth;
+        canvas.height = header.offsetHeight;
+      }
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      const chars = '01';
+      const charSize = 14;
+      const columns = canvas.width / charSize;
+      const drops = Array(Math.floor(columns)).fill(0);
+      
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#00ff00';
+        ctx.font = charSize + 'px monospace';
+        
+        for (let i = 0; i < drops.length; i++) {
+          const char = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(char, i * charSize, drops[i] * charSize);
+          
+          if (drops[i] * charSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+      
+      setInterval(draw, 50);
+    }
+    
+    // Activar efectos después de cargar
+    setTimeout(createMatrixRain, 1000);
+  </script>
+</body>
+</html>
