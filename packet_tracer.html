@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureLab - Cisco Packet Tracer: Guía Completa</title>
+  <style>
+    /* Reset default body/html margins to ensure no extra space */
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      padding-top: 20px;
+      padding-bottom: 0;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      flex: 1;
+      padding-left: 20px;
+      padding-right: 20px;
+      box-sizing: border-box;
+    }
+    .header {
+      text-align: center;
+      border: 2px solid #00ff00;
+      padding: 25px;
+      margin-bottom: 30px;
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+    }
+    .header h1 {
+      font-size: 2.5em;
+      text-shadow: 0 0 15px #00ff00;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 1.1em;
+      color: #ccffcc;
+      margin: 0;
+    }
+    .header::after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #00ff00;
+      color: #000;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.3s;
+      border: 1px solid #00ff00;
+    }
+    .back-link:hover {
+      background-color: #00cccc;
+      transform: scale(1.05);
+    }
+    .section {
+      background: rgba(0, 30, 0, 0.2);
+      border: 1px solid #00cc00;
+      padding: 25px;
+      margin-bottom: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .section h2 {
+      color: #00ffff;
+      border-bottom: 2px solid #00ffff;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      font-size: 1.4em;
+    }
+    .section h3 {
+      color: #ffff00;
+      margin: 20px 0 15px 0;
+      font-size: 1.2em;
+    }
+    .section h4 {
+      color: #ff9900;
+      margin: 15px 0 10px 0;
+      font-size: 1.1em;
+    }
+    .section p, .section ul, .section li {
+      color: #ccffcc;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+    .section ul {
+      padding-left: 20px;
+    }
+    .section li {
+      margin-bottom: 10px;
+    }
+    pre {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-size: 0.9em;
+    }
+    .examples-section ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .examples-section > ul > li {
+      background: rgba(0, 50, 0, 0.4);
+      margin-bottom: 15px;
+      padding: 20px;
+      border-radius: 6px;
+      border-left: 4px solid #00ff00;
+    }
+    .examples-section strong {
+      color: #ffff00;
+      font-size: 1.2em;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .interface-section {
+      background: rgba(0, 40, 40, 0.2);
+      border-left: 4px solid #00ffff;
+    }
+    .simulation-section {
+      background: rgba(40, 0, 40, 0.2);
+      border-left: 4px solid #ff00ff;
+    }
+    .config-section {
+      background: rgba(40, 40, 0, 0.2);
+      border-left: 4px solid #ffff00;
+    }
+    .tools-highlight {
+      background: rgba(50, 50, 0, 0.2);
+      padding: 10px;
+      border-radius: 4px;
+      color: #ffff99;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .feature-highlight {
+      background: rgba(0, 50, 50, 0.2);
+      padding: 10px;
+      border-radius: 4px;
+      color: #99ffff;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .command-highlight {
+      background: rgba(50, 0, 50, 0.2);
+      padding: 10px;
+      border-radius: 4px;
+      color: #ff99ff;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .warning {
+      background: rgba(80, 20, 0, 0.3);
+      border: 1px solid #ff6600;
+      padding: 15px;
+      border-radius: 5px;
+      color: #ffcc99;
+      margin: 20px 0;
+    }
+    .warning::before {
+      content: "⚠️ ";
+      font-size: 1.2em;
+    }
+    .tip {
+      background: rgba(0, 60, 60, 0.3);
+      border: 1px solid #00cccc;
+      padding: 15px;
+      border-radius: 5px;
+      color: #ccffff;
+      margin: 20px 0;
+    }
+    .tip::before {
+      content: "💡 ";
+      font-size: 1.2em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 25px;
+    }
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .device-card {
+      background: rgba(0, 0, 50, 0.3);
+      border: 1px solid #6666ff;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .device-card h4 {
+      color: #6666ff;
+      margin-top: 0;
+    }
+    .redirect-button {
+      margin-top: 40px;
+      margin-bottom: 50px;
+      background-color: #00ff00;
+      color: #000;
+      font-size: 1.8em;
+      padding: 15px 30px;
+      border: 3px solid #00ff00;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5), 0 0 25px rgba(0, 255, 0, 0.3);
+      transition: all 0.3s ease-in-out;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 400px;
+    }
+    .redirect-button:hover {
+      background-color: #00cc00;
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.7), 0 0 30px rgba(0, 255, 0, 0.5);
+    }
+    .footer {
+      background-color: #0a0a0a;
+      color: #00ff00;
+      text-align: center;
+      padding: 15px 20px;
+      border-top: 1px solid #00ff00;
+      margin-top: auto;
+    }
+    .footer p {
+      margin: 5px 0;
+    }
+    .footer a {
+      color: #00ffff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer a:hover {
+      color: #00cccc;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Cisco Packet Tracer</h1>
+      <p>Simulador de Red Completo - Guía Técnica Avanzada</p>
+    </div>
+
+    <a href="index.html" class="back-link">🏠 Volver al Inicio</a>
+
+    <div class="section">
+      <h2>¿Qué es Cisco Packet Tracer?</h2>
+      <p>Cisco Packet Tracer es un potente simulador de red desarrollado por Cisco Systems que permite crear, configurar y simular redes complejas de manera virtual. Es una herramienta educativa esencial para estudiantes y profesionales de redes que desean:</p>
+      <ul>
+        <li>Aprender conceptos de networking sin hardware físico</li>
+        <li>Practicar configuraciones avanzadas de dispositivos Cisco</li>
+        <li>Simular topologías de red complejas</li>
+        <li>Visualizar el flujo de datos en tiempo real</li>
+        <li>Prepararse para certificaciones CCNA, CCNP y superiores</li>
+      </ul>
+      
+      <div class="feature-highlight">
+        Características principales: Interfaz drag-and-drop, modo simulación avanzado, soporte para protocolos modernos
+      </div>
+    </div>
+
+    <div class="section interface-section">
+      <h2>🖥️ Interfaz y Componentes Principales</h2>
+      
+      <h3>Área de Trabajo (Workspace)</h3>
+      <p>El área central donde construyes y visualizas tu topología de red:</p>
+      <ul>
+        <li><strong>Logical Workspace:</strong> Vista lógica para diseñar la topología</li>
+        <li><strong>Physical Workspace:</strong> Vista física para simular ubicaciones reales</li>
+        <li><strong>Zoom y Pan:</strong> Herramientas de navegación para topologías grandes</li>
+      </ul>
+
+      <h3>Barra de Dispositivos (Device Bar)</h3>
+      <p>Categorías organizadas de equipos de red disponibles:</p>
+      <div class="device-grid">
+        <div class="device-card">
+          <h4>🖥️ End Devices</h4>
+          <p>PCs, laptops, servidores, smartphones, tablets, impresoras</p>
+        </div>
+        <div class="device-card">
+          <h4>📡 Network Devices</h4>
+          <p>Routers, switches, hubs, access points, firewalls</p>
+        </div>
+        <div class="device-card">
+          <h4>🔌 Connections</h4>
+          <p>Cables Ethernet, seriales, fibra óptica, conexiones inalámbricas</p>
+        </div>
+        <div class="device-card">
+          <h4>⚡ Components</h4>
+          <p>Módulos adicionales, tarjetas de red, fuentes de poder</p>
+        </div>
+      </div>
+
+      <h3>Panel de Herramientas</h3>
+      <ul>
+        <li><strong>Select Tool:</strong> Seleccionar y mover dispositivos</li>
+        <li><strong>Move Layout:</strong> Reposicionar toda la topología</li>
+        <li><strong>Place Note:</strong> Agregar anotaciones y comentarios</li>
+        <li><strong>Delete:</strong> Eliminar dispositivos y conexiones</li>
+        <li><strong>Inspect:</strong> Herramienta de información detallada</li>
+        <li><strong>Add Simple PDU:</strong> Crear paquetes de prueba</li>
+        <li><strong>Add Complex PDU:</strong> Paquetes personalizados avanzados</li>
+      </ul>
+    </div>
+
+    <div class="section simulation-section">
+      <h2>🎯 Modos de Operación</h2>
+
+      <h3>Modo Realtime (Tiempo Real)</h3>
+      <p>Simulación continua donde los protocolos funcionan automáticamente:</p>
+      <ul>
+        <li>Convergencia automática de protocolos de enrutamiento</li>
+        <li>Procesamiento instantáneo de paquetes</li>
+        <li>Ideal para verificar conectividad básica</li>
+        <li>Comportamiento similar a redes reales</li>
+      </ul>
+
+      <h3>Modo Simulation (Simulación Paso a Paso)</h3>
+      <p>Control granular sobre el flujo de paquetes para análisis educativo:</p>
+      <ul>
+        <li><strong>Event List:</strong> Lista de todos los eventos de red pendientes</li>
+        <li><strong>Play Controls:</strong> Reproducir, pausar, adelantar, retroceder</li>
+        <li><strong>Capture/Forward:</strong> Capturar paquetes para análisis detallado</li>
+        <li><strong>Filtros de Protocolo:</strong> Mostrar solo protocolos específicos</li>
+      </ul>
+
+      <div class="feature-highlight">
+        Ventaja clave: Visualización del encapsulamiento y desencapsulamiento de datos en cada capa OSI
+      </div>
+
+      <h3>Análisis de Paquetes en Simulación</h3>
+      <p>Cada paquete muestra información detallada:</p>
+      <ul>
+        <li>Headers de cada capa del modelo OSI</li>
+        <li>Direcciones MAC y IP origen/destino</li>
+        <li>Números de puerto y protocolos</li>
+        <li>Proceso de toma de decisiones en cada dispositivo</li>
+      </ul>
+    </div>
+
+    <div class="section config-section">
+      <h2>⚙️ Configuración de Dispositivos</h2>
+
+      <h3>Configuración Básica de Router</h3>
+      <p>Comandos esenciales para configuración inicial:</p>
+      <pre>Router> enable
+Router# configure terminal
+Router(config)# hostname R1
+R1(config)# interface gigabitethernet 0/0
+R1(config-if)# ip address 192.168.1.1 255.255.255.0
+R1(config-if)# no shutdown
+R1(config-if)# exit
+R1(config)# ip route 0.0.0.0 0.0.0.0 192.168.1.254</pre>
+
+      <h3>Configuración de Switch</h3>
+      <p>Configuración VLAN y spanning tree:</p>
+      <pre>Switch> enable
+Switch# configure terminal
+Switch(config)# hostname SW1
+SW1(config)# vlan 10
+SW1(config-vlan)# name VENTAS
+SW1(config-vlan)# exit
+SW1(config)# interface fastethernet 0/1
+SW1(config-if)# switchport mode access
+SW1(config-if)# switchport access vlan 10</pre>
+
+      <div class="command-highlight">
+        Comandos de verificación: show ip route, show vlan brief, show interfaces status
+      </div>
+
+      <h3>Configuración de End Devices</h3>
+      <p>Configuración de PCs y servidores:</p>
+      <ul>
+        <li><strong>IP Configuration:</strong> Dirección IP, máscara, gateway</li>
+        <li><strong>DNS Settings:</strong> Servidores DNS primario y secundario</li>
+        <li><strong>Services:</strong> HTTP, FTP, DHCP, DNS servers</li>
+        <li><strong>Desktop Tools:</strong> Terminal, web browser, command prompt</li>
+      </ul>
+    </div>
+
+    <div class="examples-section section">
+      <h2>🔧 10 Ejercicios Prácticos Paso a Paso</h2>
+      <ul>
+        <li>
+          <strong>1. Red LAN Básica con Switch</strong>
+          <p>Crear una red local simple conectando 4 PCs a un switch:</p>
+          <pre>Paso 1: Arrastrar 1 switch 2960 y 4 PCs al workspace
+Paso 2: Conectar cada PC al switch con cable straight-through
+Paso 3: Configurar IPs en rango 192.168.1.0/24
+   PC1: 192.168.1.10/24
+   PC2: 192.168.1.11/24
+   PC3: 192.168.1.12/24
+   PC4: 192.168.1.13/24
+Paso 4: Probar conectividad con ping entre PCs</pre>
+          <div class="tools-highlight">Conceptos: Dominios de colisión, switching, ARP</div>
+        </li>
+        
+        <li>
+          <strong>2. Enrutamiento Básico Entre VLANs</strong>
+          <p>Configurar router-on-a-stick para comunicación inter-VLAN:</p>
+          <pre>Configuración del Switch:
+SW1(config)# vlan 10
+SW1(config-vlan)# name VENTAS
+SW1(config)# vlan 20  
+SW1(config-vlan)# name ADMIN
+SW1(config)# interface fa0/24
+SW1(config-if)# switchport mode trunk
+
+Configuración del Router:
+R1(config)# interface gi0/0.10
+R1(config-subif)# encapsulation dot1q 10
+R1(config-subif)# ip address 192.168.10.1 255.255.255.0
+R1(config)# interface gi0/0.20
+R1(config-subif)# encapsulation dot1q 20
+R1(config-subif)# ip address 192.168.20.1 255.255.255.0</pre>
+          <div class="feature-highlight">Concepto clave: Inter-VLAN routing, subinterfaces, trunk ports</div>
+        </li>
+
+        <li>
+          <strong>3. Configuración de DHCP Server</strong>
+          <p>Implementar asignación automática de direcciones IP:</p>
+          <pre>Configuración en Router:
+R1(config)# ip dhcp pool VLAN10
+R1(dhcp-config)# network 192.168.10.0 255.255.255.0
+R1(dhcp-config)# default-router 192.168.10.1
+R1(dhcp-config)# dns-server 8.8.8.8
+R1(dhcp-config)# exit
+R1(config)# ip dhcp excluded-address 192.168.10.1 192.168.10.10
+
+Configuración en PCs:
+- Cambiar configuración IP a DHCP
+- Verificar asignación con ipconfig</pre>
+          <div class="command-highlight">Verificación: show ip dhcp binding, show ip dhcp pool</div>
+        </li>
+
+        <li>
+          <strong>4. Configuración de Access Point Inalámbrico</strong>
+          <p>Crear red Wi-Fi segura con WPA2:</p>
+          <pre>Configuración del Access Point:
+- Port 1: Conectar a switch con cable straight-through
+- Config Tab → Wireless:
+  - SSID: CompanyWiFi
+  - Security: WPA2-PSK
+  - Pass Phrase: SecurePassword123
+  - Authentication: AES
+
+Configuración de dispositivos móviles:
+- Laptop: Instalar módulo WPC300N
+- Conectar a red "CompanyWiFi"
+- Ingresar contraseña configurada</pre>
+          <div class="feature-highlight">Conceptos: SSID, WPA2, authentication, wireless security</div>
+        </li>
+
+        <li>
+          <strong>5. Protocolos de Enrutamiento Dinámico (OSPF)</strong>
+          <p>Implementar OSPF para convergencia automática:</p>
+          <pre>Topología: 3 routers interconectados
+
+Router R1:
+R1(config)# router ospf 1
+R1(config-router)# network 192.168.1.0 0.0.0.255 area 0
+R1(config-router)# network 10.1.1.0 0.0.0.255 area 0
+
+Router R2:
+R2(config)# router ospf 1
+R2(config-router)# network 10.1.1.0 0.0.0.255 area 0
+R2(config-router)# network 10.2.2.0 0.0.0.255 area 0
+
+Verificación:
+R1# show ip route ospf
+R1# show ip ospf neighbor</pre>
+          <div class="tools-highlight">Herramientas: show ip protocols, debug ip ospf events</div>
+        </li>
+
+        <li>
+          <strong>6. Servidor Web y DNS</strong>
+          <p>Configurar servicios de red esenciales:</p>
+          <pre>Configuración del Servidor DNS:
+- Services Tab → DNS: ON
+- Agregar registros:
+  www.company.com → 192.168.1.100
+  mail.company.com → 192.168.1.101
+
+Configuración del Servidor Web:
+- Services Tab → HTTP: ON
+- Modificar index.html con contenido personalizado
+
+Configuración de clientes:
+- DNS Server: 192.168.1.10
+- Probar con Web Browser: www.company.com</pre>
+          <div class="feature-highlight">Servicios: DNS resolution, HTTP server, web hosting</div>
+        </li>
+
+        <li>
+          <strong>7. Lista de Control de Acceso (ACL)</strong>
+          <p>Implementar seguridad con ACLs estándar y extendidas:</p>
+          <pre>ACL Estándar (bloquear subnet completa):
+R1(config)# access-list 10 deny 192.168.20.0 0.0.0.255
+R1(config)# access-list 10 permit any
+R1(config)# interface gi0/1
+R1(config-if)# ip access-group 10 out
+
+ACL Extendida (bloquear tráfico específico):
+R1(config)# access-list 100 deny tcp 192.168.10.0 0.0.0.255 any eq 80
+R1(config)# access-list 100 permit ip any any
+R1(config)# interface gi0/0
+R1(config-if)# ip access-group 100 in</pre>
+          <div class="command-highlight">Verificación: show access-lists, show ip interface</div>
+        </li>
+
+        <li>
+          <strong>8. Configuración de VPN Site-to-Site</strong>
+          <p>Conectar dos sitios remotos de forma segura:</p>
+          <pre>Router Sede Principal:
+R1(config)# crypto isakmp policy 10
+R1(config-isakmp)# authentication pre-share
+R1(config-isakmp)# encryption aes
+R1(config-isakmp)# hash sha
+R1(config-isakmp)# group 2
+R1(config)# crypto isakmp key VPNSecretKey address 203.0.113.2
+
+Configuración IPSec Transform Set:
+R1(config)# crypto ipsec transform-set VPN-SET esp-aes esp-sha-hmac
+R1(config)# crypto map VPN-MAP 10 ipsec-isakmp
+R1(cfg-crypto-map)# set peer 203.0.113.2
+R1(cfg-crypto-map)# set transform-set VPN-SET</pre>
+          <div class="tools-highlight">Protocolos: IKE, IPSec, ESP, encryption algorithms</div>
+        </li>
+
+        <li>
+          <strong>9. Simulación de Fallos y Redundancia</strong>
+          <p>Implementar STP y probar redundancia de enlaces:</p>
+          <pre>Topología: 3 switches con enlaces redundantes
+
+Configuración Spanning Tree:
+SW1(config)# spanning-tree mode rapid-pvst
+SW1(config)# spanning-tree vlan 1 priority 4096
+
+Simulación de fallos:
+1. Desconectar enlace principal
+2. Observar convergencia STP en modo simulación
+3. Verificar nueva ruta activa
+4. Reconectar enlace y observar reconvergencia
+
+Comandos de verificación:
+SW1# show spanning-tree vlan 1</pre>
+          <div class="feature-highlight">Conceptos: STP convergence, root bridge, port states</div>
+        </li>
+
+        <li>
+          <strong>10. Análisis de Tráfico con Wireshark Integration</strong>
+          <p>Captura y análisis detallado de paquetes:</p>
+          <pre>Configuración de captura:
+1. Modo Simulation → Add Simple PDU
+2. Configurar filtros de protocolo (HTTP, ICMP, TCP)
+3. Ejecutar simulación paso a paso
+4. Capturar paquetes en puntos específicos
+
+Análisis de headers:
+- Capa 2: MAC addresses, Ethernet type
+- Capa 3: IP addresses, TTL, protocol
+- Capa 4: Port numbers, sequence numbers
+- Análisis de tiempo de propagación
+
+Ejercicios de troubleshooting:
+- Identificar loops en la red
+- Analizar convergencia de protocolos
+- Detectar problemas de configuración</pre>
+          <div class="command-highlight">Herramientas: Simulation mode, packet capture, protocol analysis</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🎓 Funciones Avanzadas y Tips Profesionales</h2>
+      
+      <h3>Multiuser Environment</h3>
+      <p>Colaboración en tiempo real entre múltiples usuarios:</p>
+      <ul>
+        <li>Sesiones compartidas para trabajo en equipo</li>
+        <li>Control de permisos por usuario</li>
+        <li>Chat integrado para comunicación</li>
+        <li>Ideal para aulas virtuales y laboratorios remotos</li>
+      </ul>
+
+      <h3>Assessment y Autoevaluación</h3>
+      <p>Herramientas integradas para evaluación del aprendizaje:</p>
+      <ul>
+        <li>Activity Wizard para crear ejercicios personalizados</li>
+        <li>Scoring automático basado en objetivos</li>
+        <li>Feedback inmediato para estudiantes</li>
+        <li>Reportes detallados de progreso</li>
+      </ul>
+
+      <h3>Programación con Python y APIs</h3>
+      <p>Automatización avanzada mediante scripting:</p>
+      <ul>
+        <li>Python scripts para configuración masiva</li>
+        <li>APIs REST para integración con sistemas externos</li>
+        <li>Automatización de topologías complejas</li>
+        <li>Generación de reportes personalizados</li>
+      </ul>
+
+      <div class="tip">
+        <strong>Tip Profesional:</strong> Utiliza el modo de simulación para entender profundamente cómo funcionan los protocolos antes de implementarlos en equipos reales. La visualización paso a paso es invaluable para el aprendizaje.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📚 Preparación para Certificaciones</h2>
+      
+      <h3>CCNA 200-301</h3>
+      <ul>
+        <li>Fundamentos de networking y modelo OSI</li>
+        <li>Switching y VLANs</li>
+        <li>Enrutamiento estático y dinámico</li>
+        <li>Configuración básica de seguridad</li>
+        <li>Resolución de problemas de conectividad</li>
+      </ul>
+
+      <h3>CCNP Enterprise</h3>
+      <ul>
+        <li>Tecnologías avanzadas de switching</li>
+        <li>Protocolos de enrutamiento complejos (EIGRP, OSPF, BGP)</li>
+        <li>Implementación de QoS</li>
+        <li>Tecnologías de WAN y VPN</li>
+        <li>Automatización y programabilidad de redes</li>
+      </ul>
+
+      <div class="feature-highlight">
+        Ventaja: Práctica ilimitada sin costo de equipos físicos, ideal para preparación de labs
+      </div>
+    </div>
+
+    <div class="warning">
+      <strong>Limitaciones Importantes:</strong> Packet Tracer es un simulador educativo, no emula al 100% el comportamiento de equipos reales. Algunas funciones avanzadas y comandos específicos pueden no estar disponibles. Para preparación de certificaciones avanzadas, complementar con equipos físicos o emuladores como GNS3.
+    </div>
+
+    <button class="redirect-button" onclick="window.open('https://www.netacad.com/courses/packet-tracer', '_blank')">Descargar Packet Tra
