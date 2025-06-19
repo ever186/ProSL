@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureLab - Laboratorio Criptográfico Interactivo</title>
+  <style>
+    /* Estilos generales */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .lab-container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .lab-header {
+      text-align: center;
+      border: 2px solid #00ff00;
+      padding: 25px;
+      margin-bottom: 30px;
+      background: rgba(0, 255, 0, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+      border-radius: 10px;
+    }
+    .lab-header h1 {
+      font-size: 2.5em;
+      text-shadow: 0 0 15px #00ff00;
+      margin-bottom: 10px;
+    }
+    .lab-header p {
+      font-size: 1.1em;
+      color: #ccffcc;
+    }
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 30px;
+      justify-content: center;
+    }
+    .nav-tab {
+      padding: 12px 20px;
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: all 0.3s;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.9em;
+    }
+    .nav-tab:hover, .nav-tab.active {
+      background: #00ff00;
+      color: #000;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+    .lab-section {
+      display: none;
+      background: rgba(0, 30, 0, 0.2);
+      border: 1px solid #00cc00;
+      border-radius: 10px;
+      padding: 30px;
+      backdrop-filter: blur(5px);
+    }
+    .lab-section.active {
+      display: block;
+    }
+    .tool-grid {
+      display: grid;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    .tool-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #00ff00;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .tool-title {
+      color: #00ffff;
+      font-size: 1.3em;
+      margin-bottom: 15px;
+      text-shadow: 0 0 5px #00ffff;
+      border-bottom: 1px solid #00ffff;
+      padding-bottom: 5px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      color: #ffff00;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      background: #000;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      resize: vertical;
+    }
+    .form-control:focus {
+      outline: none;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+      border-color: #00cccc;
+    }
+    .btn {
+      padding: 12px 25px;
+      background: #00ff00;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      transition: all 0.3s;
+      margin: 5px;
+      text-transform: uppercase;
+    }
+    .btn:hover {
+      background: #00cc00;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    }
+    .btn-secondary {
+      background: #ff6600;
+      color: #fff;
+    }
+    .btn-secondary:hover {
+      background: #cc5500;
+    }
+    .btn-danger {
+      background: #ff4444;
+      color: #fff;
+    }
+    .btn-danger:hover {
+      background: #cc3333;
+    }
+    .output-area {
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      min-height: 100px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 15px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #000;
+      border: 1px solid #00ff00;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+      width: 0%;
+      transition: width 0.3s;
+      border-radius: 10px;
+    }
+    .strength-indicator {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .strength-bar {
+      height: 10px;
+      width: 20px;
+      background: #333;
+      border-radius: 2px;
+    }
+    .strength-bar.active {
+      background: #00ff00;
+    }
+    .strength-bar.medium {
+      background: #ffff00;
+    }
+    .strength-bar.weak {
+      background: #ff4444;
+    }
+    .key-display {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #ff00ff;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-size: 12px;
+      word-break: break-all;
+    }
+    .key-display .key-label {
+      color: #ff00ff;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .algorithm-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .algorithm-option {
+      padding: 8px 15px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid #00ffff;
+      border-radius: 5px;
+      color: #00ffff;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 12px;
+    }
+    .algorithm-option:hover, .algorithm-option.selected {
+      background: #00ffff;
+      color: #000;
+    }
+    .demo-visual {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #ffff00;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .demo-step {
+      margin: 15px 0;
+      padding: 10px;
+      border-left: 3px solid #00ff00;
+      background: rgba(0, 255, 0, 0.05);
+    }
+    .demo-arrow {
+      color: #00ffff;
+      font-size: 1.5em;
+      margin: 10px 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .stat-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #00ff00;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #00ffff;
+    }
+    .stat-label {
+      color: #ccffcc;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+    .warning-box {
+      background: rgba(255, 102, 0, 0.1);
+      border: 1px solid #ff6600;
+      padding: 15px;
+      border-radius: 5px;
+      color: #ffcc99;
+      margin: 15px 0;
+    }
+    .warning-box::before {
+      content: "⚠️ ";
+      font-size: 1.2em;
+    }
+    .file-drop-zone {
+      border: 2px dashed #00ff00;
+      padding: 40px;
+      text-align: center;
+      border-radius: 10px;
+      background: rgba(0, 255, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .file-drop-zone:hover {
+      background: rgba(0, 255, 0, 0.1);
+      border-color: #00cccc;
+    }
+    .file-drop-zone.dragover {
+      background: rgba(0, 255, 0, 0.2);
+      border-color: #00ffff;
+    }
+    @media (max-width: 768px) {
+      .nav-tabs {
+        flex-direction: column;
+      }
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.03;
+    }
+    .performance-monitor {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #00ff00;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      min-width: 150px;
+    }
+    /* Estilos para modales de explicaciones */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #1a1a2e;
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #ff4444;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+  <div class="performance-monitor" id="perfMonitor">
+    <div><strong>CPU:</strong> <span id="cpuUsage">0%</span></div>
+    <div><strong>Memoria:</strong> <span id="memUsage">0MB</span></div>
+    <div><strong>Ops/seg:</strong> <span id="opsPerSec">0</span></div>
+  </div>
+  <div class="lab-container">
+    <div class="lab-header">
+      <h1>🔬 Laboratorio Criptográfico Interactivo</h1>
+      <p>Experimenta y aprende cómo funcionan los algoritmos criptográficos en tiempo real</p>
+    </div>
+    <div class="nav-tabs">
+      <div class="nav-tab active" onclick="showSection('symmetric', event)">🔑 Cifrado Simétrico</div>
+      <div class="nav-tab" onclick="showSection('asymmetric', event)">🔐 Cifrado Asimétrico</div>
+      <div class="nav-tab" onclick="showSection('hash', event)">🔣 Funciones Hash</div>
+      <div class="nav-tab" onclick="showSection('password', event)">🛡️ Análisis de Contraseñas</div>
+      <div class="nav-tab" onclick="showSection('steganography', event)">🖼️ Esteganografía</div>
+      <div class="nav-tab" onclick="showSection('certificates', event)">📜 Certificados</div>
+    </div>
+
+    <!-- Sección Cifrado Simétrico -->
+    <div class="lab-section active" id="symmetric">
+      <div class="tool-grid">
+        <!-- Tarjeta AES -->
+        <div class="tool-card">
+          <h3 class="tool-title">🔒 Cifrado AES</h3>
+          <div class="algorithm-selector">
+            <div class="algorithm-option selected" data-algorithm="AES-128">AES-128</div>
+            <div class="algorithm-option" data-algorithm="AES-192">AES-192</div>
+            <div class="algorithm-option" data-algorithm="AES-256">AES-256</div>
+          </div>
+          <div class="form-group">
+            <label>Texto a cifrar:</label>
+            <textarea class="form-control" id="symmetricPlaintext" rows="4" placeholder="Ingresa el texto que deseas cifrar...">Mensaje secreto para cifrar</textarea>
+          </div>
+          <div class="form-group">
+            <label>Clave (opcional - se generará automáticamente si está vacía):</label>
+            <input type="text" class="form-control" id="symmetricKey" placeholder="Clave de cifrado">
+          </div>
+          <div class="form-group">
+            <label>Modo de operación:</label>
+            <select class="form-control" id="symmetricMode">
+              <option value="GCM">GCM (Galois/Counter Mode)</option>
+              <option value="CBC">CBC (Cipher Block Chaining)</option>
+              <option value="CTR">CTR (Counter Mode)</option>
+              <option value="ECB">ECB (Electronic Codebook) - No recomendado</option>
+            </select>
+          </div>
+          <button class="btn" onclick="generateSymmetricKey()">🔑 Generar Clave</button>
+          <button class="btn" onclick="encryptSymmetric()">🔒 Cifrar</button>
+          <button class="btn" onclick="decryptSymmetric()">🔓 Descifrar</button>
+          <button class="btn btn-secondary" onclick="clearSymmetric()">🧹 Limpiar</button>
+          <button class="btn btn-secondary" onclick="showExplanation('aes')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('symmetricOutput')">📥 Exportar Resultado</button>
+          <div class="output-area" id="symmetricOutput">Resultado aparecerá aquí...</div>
+          <div class="demo-visual">
+            <div class="demo-step"><strong>Paso 1:</strong> Texto plano → Bloques de 128 bits</div>
+            <div class="demo-arrow">⬇️</div>
+            <div class="demo-step"><strong>Paso 2:</strong> Aplicar transformaciones AES (SubBytes, ShiftRows, MixColumns, AddRoundKey)</div>
+            <div class="demo-arrow">⬇️</div>
+            <div class="demo-step"><strong>Paso 3:</strong> Texto cifrado → Codificación Base64 para visualización</div>
+          </div>
+        </div>
+        <!-- Tarjeta Cifrado de Flujo -->
+        <div class="tool-card">
+          <h3 class="tool-title">🌊 Cifrado de Flujo</h3>
+          <div class="form-group">
+            <label>Mensaje:</label>
+            <textarea class="form-control" id="streamMessage" rows="3" placeholder="Mensaje para cifrado de flujo">Hola mundo secreto</textarea>
+          </div>
+          <div class="form-group">
+            <label>Semilla (Seed):</label>
+            <input type="number" class="form-control" id="streamSeed" value="12345" placeholder="Semilla para generador pseudoaleatorio">
+          </div>
+          <button class="btn" onclick="processStreamCipher()">🔄 Procesar</button>
+          <button class="btn btn-secondary" onclick="demonstrateStreamCipher()">📊 Demostrar Flujo</button>
+          <button class="btn btn-secondary" onclick="showExplanation('stream')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('streamOutput')">📥 Exportar Resultado</button>
+          <div class="output-area" id="streamOutput">Los resultados del cifrado de flujo aparecerán aquí...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Cifrado Asimétrico -->
+    <div class="lab-section" id="asymmetric">
+      <div class="tool-grid">
+        <!-- Tarjeta RSA -->
+        <div class="tool-card">
+          <h3 class="tool-title">🔐 Generador de Claves RSA</h3>
+          <div class="algorithm-selector">
+            <div class="algorithm-option selected" data-size="1024">1024 bits</div>
+            <div class="algorithm-option" data-size="2048">2048 bits</div>
+            <div class="algorithm-option" data-size="3072">3072 bits</div>
+            <div class="algorithm-option" data-size="4096">4096 bits</div>
+          </div>
+          <button class="btn" onclick="generateRSAKeys()">🔑 Generar Par de Claves</button>
+          <button class="btn btn-secondary" onclick="showRSAMath()">🧮 Ver Explicación Matemática</button>
+          <button class="btn btn-secondary" onclick="exportResult('rsaOutput')">📥 Exportar Resultado</button>
+          <div class="key-display" id="rsaPublicKey" style="display:none;">
+            <div class="key-label">🔓 Clave Pública (n, e):</div>
+            <div id="publicKeyContent"></div>
+          </div>
+          <div class="key-display" id="rsaPrivateKey" style="display:none;">
+            <div class="key-label">🔒 Clave Privada (n, d):</div>
+            <div id="privateKeyContent"></div>
+          </div>
+          <div class="form-group">
+            <label>Mensaje a cifrar/descifrar:</label>
+            <textarea class="form-control" id="rsaMessage" rows="3" placeholder="Mensaje para RSA">Mensaje confidencial</textarea>
+          </div>
+          <button class="btn" onclick="encryptRSA()">🔒 Cifrar con Clave Pública</button>
+          <button class="btn" onclick="decryptRSA()">🔓 Descifrar con Clave Privada</button>
+          <button class="btn btn-secondary" onclick="signRSA()">✍️ Firmar Mensaje</button>
+          <button class="btn btn-secondary" onclick="verifyRSA()">✅ Verificar Firma</button>
+          <div class="output-area" id="rsaOutput">Resultado de operaciones RSA...</div>
+        </div>
+        <!-- Tarjeta Diffie-Hellman -->
+        <div class="tool-card">
+          <h3 class="tool-title">📊 Intercambio de Claves Diffie-Hellman</h3>
+          <div class="demo-visual">
+            <h4>Simulación de Intercambio DH</h4>
+            <div id="dhDemo">
+              <div class="demo-step">
+                <strong>Parámetros públicos:</strong>
+                <div>p = <span id="dhP">23</span> (primo)</div>
+                <div>g = <span id="dhG">5</span> (generador)</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Clave privada de Alice (a):</label>
+            <input type="number" class="form-control" id="dhAlicePrivate" value="6" min="1" max="22">
+          </div>
+          <div class="form-group">
+            <label>Clave privada de Bob (b):</label>
+            <input type="number" class="form-control" id="dhBobPrivate" value="15" min="1" max="22">
+          </div>
+          <button class="btn" onclick="performDHExchange()">🔄 Realizar Intercambio</button>
+          <button class="btn btn-secondary" onclick="randomizeDH()">🎲 Aleatorizar Valores</button>
+          <button class="btn btn-secondary" onclick="showExplanation('dh')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('dhOutput')">📥 Exportar Resultado</button>
+          <div class="output-area" id="dhOutput">Proceso de intercambio Diffie-Hellman...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Funciones Hash -->
+    <div class="lab-section" id="hash">
+      <div class="tool-grid">
+        <!-- Tarjeta Calculadora de Hashes -->
+        <div class="tool-card">
+          <h3 class="tool-title">🔣 Calculadora de Hashes</h3>
+          <div class="algorithm-selector">
+            <div class="algorithm-option selected" data-hash="SHA-1">SHA-1</div>
+            <div class="algorithm-option" data-hash="SHA-256">SHA-256</div>
+            <div class="algorithm-option" data-hash="SHA-512">SHA-512</div>
+            <div class="algorithm-option" data-hash="MD5">MD5</div>
+          </div>
+          <div class="form-group">
+            <label>Texto de entrada:</label>
+            <textarea class="form-control" id="hashInput" rows="4" placeholder="Ingresa el texto para calcular hash">Texto de ejemplo para hash</textarea>
+          </div>
+          <button class="btn" onclick="calculateHash()">🔢 Calcular Hash</button>
+          <button class="btn btn-secondary" onclick="compareHashes()">📊 Comparar Hashes</button>
+          <button class="btn btn-secondary" onclick="demonstrateAvalanche()">🌊 Efecto Avalancha</button>
+          <button class="btn btn-secondary" onclick="showExplanation('hash')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('hashOutput')">📥 Exportar Resultado</button>
+          <div class="output-area" id="hashOutput">Resultado del hash aparecerá aquí...</div>
+          <div class="file-drop-zone" id="fileDropZone" onclick="document.getElementById('fileInput').click()">
+            <div>📁 Haz clic o arrastra archivos aquí para calcular hash</div>
+            <div>Soporta archivos hasta 10MB</div>
+          </div>
+          <input type="file" id="fileInput" style="display:none" onchange="hashFile(this.files[0])">
+        </div>
+        <!-- Tarjeta HMAC -->
+        <div class="tool-card">
+          <h3 class="tool-title">🔐 HMAC (Hash-based Message Authentication Code)</h3>
+          <div class="form-group">
+            <label>Mensaje:</label>
+            <textarea class="form-control" id="hmacMessage" rows="3" placeholder="Mensaje para HMAC">Mensaje importante</textarea>
+          </div>
+          <div class="form-group">
+            <label>Clave secreta:</label>
+            <input type="text" class="form-control" id="hmacKey" placeholder="Clave secreta para HMAC" value="mi_clave_secreta">
+          </div>
+          <div class="algorithm-selector">
+            <div class="algorithm-option selected" data-hmac="SHA-256">HMAC-SHA256</div>
+            <div class="algorithm-option" data-hmac="SHA-1">HMAC-SHA1</div>
+            <div class="algorithm-option" data-hmac="SHA-512">HMAC-SHA512</div>
+          </div>
+          <button class="btn" onclick="calculateHMAC()">🔒 Calcular HMAC</button>
+          <button class="btn btn-secondary" onclick="verifyHMAC()">✅ Verificar HMAC</button>
+          <button class="btn btn-secondary" onclick="showExplanation('hmac')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('hmacOutput')">📥 Exportar Resultado</button>
+          <div class="output-area" id="hmacOutput">Resultado HMAC...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Análisis de Contraseñas -->
+    <div class="lab-section" id="password">
+      <div class="tool-grid">
+        <!-- Tarjeta Analizador de Fortaleza de Contraseñas -->
+        <div class="tool-card">
+          <h3 class="tool-title">🛡️ Analizador de Fortaleza de Contraseñas</h3>
+          <div class="form-group">
+            <label>Contraseña a analizar:</label>
+            <input type="password" class="form-control" id="passwordInput" placeholder="Ingresa una contraseña" oninput="analyzePassword()">
+            <button type="button" class="btn btn-secondary" onclick="togglePasswordVisibility()" style="margin-top: 10px;">👁️ Mostrar/Ocultar</button>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="passwordStrength"></div>
+          </div>
+          <div class="strength-indicator" id="strengthBars">
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+            <div class="strength-bar"></div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="passwordLength">0</div>
+              <div class="stat-label">Caracteres</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="passwordEntropy">0</div>
+              <div class="stat-label">Bits de Entropía</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="crackTime">0s</div>
+              <div class="stat-label">Tiempo de Ruptura</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="passwordScore">0/100</div>
+              <div class="stat-label">Puntuación</div>
+            </div>
+          </div>
+          <button class="btn" onclick="generateSecurePassword()">🔑 Generar Contraseña Segura</button>
+          <button class="btn btn-secondary" onclick="checkCommonPasswords()">🔍 Verificar Contraseñas Comunes</button>
+          <button class="btn btn-secondary" onclick="showExplanation('password')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('passwordAnalysis')">📥 Exportar Resultado</button>
+          <div class="output-area" id="passwordAnalysis">Análisis detallado aparecerá aquí...</div>
+        </div>
+        <!-- Tarjeta Simulador de Ataques de Fuerza Bruta -->
+        <div class="tool-card">
+          <h3 class="tool-title">🔓 Simulador de Ataques de Fuerza Bruta</h3>
+          <div class="form-group">
+            <label>Contraseña objetivo:</label>
+            <input type="text" class="form-control" id="targetPassword" placeholder="Contraseña a 'crackear'" value="abc123">
+          </div>
+          <div class="form-group">
+            <label>Tipo de ataque:</label>
+            <select class="form-control" id="attackType">
+              <option value="brute">Fuerza Bruta Completa</option>
+              <option value="dictionary">Ataque de Diccionario</option>
+              <option value="hybrid">Híbrido (Diccionario + Mutaciones)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Velocidad de ataque (intentos/segundo):</label>
+            <input type="range" class="form-control" id="attackSpeed" min="1000" max="100000" value="10000" oninput="document.getElementById('speedValue').textContent = this.value">
+            <div>Velocidad: <span id="speedValue">10000</span> intentos/segundo</div>
+          </div>
+          <button class="btn btn-danger" onclick="startBruteForce()">⚔️ Iniciar Ataque</button>
+          <button class="btn" onclick="stopBruteForce()">⏹️ Detener</button>
+          <button class="btn btn-secondary" onclick="showExplanation('brute')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('bruteForceOutput')">📥 Exportar Resultado</button>
+          <div class="progress-bar">
+            <div class="progress-fill" id="bruteForceProgress"></div>
+          </div>
+          <div class="output-area" id="bruteForceOutput">Simulación de ataque de fuerza bruta...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Esteganografía -->
+    <div class="lab-section" id="steganography">
+      <div class="tool-grid">
+        <div class="tool-card">
+          <h3 class="tool-title">🖼️ Esteganografía en Imágenes</h3>
+          <div class="form-group">
+            <label>Selecciona la imagen (portadora):</label>
+            <input type="file" class="form-control" id="stegoImageInput" accept="image/*" onchange="loadStegoImage(event)">
+          </div>
+          <div class="form-group">
+            <label>Mensaje a ocultar:</label>
+            <textarea class="form-control" id="stegoMessage" rows="3" placeholder="Ingresa el mensaje a ocultar en la imagen">Mensaje secreto oculto</textarea>
+          </div>
+          <button class="btn" onclick="hideMessageInImage()">🔒 Ocultar Mensaje</button>
+          <button class="btn" onclick="extractMessageFromImage()">🔓 Extraer Mensaje</button>
+          <button class="btn btn-secondary" onclick="showExplanation('stego')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('stegoOutput')">📥 Exportar Resultado</button>
+          <div class="output-area" id="stegoOutput">El resultado de esteganografía aparecerá aquí...</div>
+          <canvas id="stegoCanvas" style="display:none;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección Certificados Digitales -->
+    <div class="lab-section" id="certificates">
+      <div class="tool-grid">
+        <div class="tool-card">
+          <h3 class="tool-title">📜 Gestión de Certificados Digitales</h3>
+          <div class="form-group">
+            <label>Nombre del Emisor:</label>
+            <input type="text" class="form-control" id="certIssuer" placeholder="Nombre del Emisor">
+          </div>
+          <div class="form-group">
+            <label>Nombre del Sujeto:</label>
+            <input type="text" class="form-control" id="certSubject" placeholder="Nombre del Sujeto">
+          </div>
+          <div class="form-group">
+            <label>Vigencia (días):</label>
+            <input type="number" class="form-control" id="certValidity" placeholder="Número de días de vigencia" value="365">
+          </div>
+          <button class="btn" onclick="generateCertificate()">📝 Generar Certificado</button>
+          <button class="btn btn-secondary" onclick="showExplanation('cert')">❓ Ver Explicación</button>
+          <button class="btn btn-secondary" onclick="exportResult('certOutput')">📥 Exportar Resultado</button>
+          <div class="output-area" id="certOutput">Información del certificado generado aparecerá aquí...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Explicaciones -->
+  <div class="modal" id="explanationModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeExplanation()">&times;</button>
+      <div id="explanationContent">
+        <!-- Aquí se inyectará la explicación según la herramienta -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Función para cambiar entre secciones
+    function showSection(sectionId, evt) {
+    document.querySelectorAll('.lab-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.getElementById(sectionId).classList.add('active');
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+        evt.target.classList.add('active');
+    }
+
+
+    // Funciones de ejemplo para cada herramienta (se deben implementar las operaciones reales)
+    function generateSymmetricKey() {
+      const key = Math.random().toString(36).substr(2, 16);
+      document.getElementById('symmetricKey').value = key;
+    }
+
+    function encryptSymmetric() {
+      const plaintext = document.getElementById('symmetricPlaintext').value;
+      const key = document.getElementById('symmetricKey').value || 'clave_por_defecto';
+      const mode = document.getElementById('symmetricMode').value;
+      // Proceso simulado de cifrado (aquí se podría integrar una librería real)
+      const encrypted = btoa(plaintext + key + mode);
+      document.getElementById('symmetricOutput').textContent = encrypted;
+    }
+
+    function decryptSymmetric() {
+      try {
+        const encrypted = document.getElementById('symmetricOutput').textContent;
+        const decrypted = atob(encrypted);
+        document.getElementById('symmetricOutput').textContent = decrypted;
+      } catch(e) {
+        alert("Error al descifrar: formato incorrecto");
+      }
+    }
+
+    function clearSymmetric() {
+      document.getElementById('symmetricPlaintext').value = "";
+      document.getElementById('symmetricKey').value = "";
+      document.getElementById('symmetricOutput').textContent = "Resultado aparecerá aquí...";
+    }
+
+    function processStreamCipher() {
+      const message = document.getElementById('streamMessage').value;
+      const seed = document.getElementById('streamSeed').value;
+      // Proceso simulado: combinación de mensaje y semilla
+      const result = btoa(message + seed);
+      document.getElementById('streamOutput').textContent = result;
+    }
+
+    function demonstrateStreamCipher() {
+      document.getElementById('streamOutput').textContent = "Demostración gráfica del flujo...\n1. Generación de secuencia pseudoaleatoria.\n2. XOR con el mensaje.";
+    }
+
+    // RSA funciones simuladas
+    let rsaKeys = {};
+    function generateRSAKeys() {
+      // Genera claves simuladas
+      rsaKeys.publicKey = { n: "123456789", e: "65537" };
+      rsaKeys.privateKey = { n: "123456789", d: "987654321" };
+      document.getElementById('publicKeyContent').textContent = JSON.stringify(rsaKeys.publicKey);
+      document.getElementById('privateKeyContent').textContent = JSON.stringify(rsaKeys.privateKey);
+      document.getElementById('rsaPublicKey').style.display = "block";
+      document.getElementById('rsaPrivateKey').style.display = "block";
+    }
+    function encryptRSA() {
+      const message = document.getElementById('rsaMessage').value;
+      document.getElementById('rsaOutput').textContent = "Mensaje cifrado con RSA (simulado): " + btoa(message);
+    }
+    function decryptRSA() {
+      try {
+        const result = document.getElementById('rsaOutput').textContent.replace("Mensaje cifrado con RSA (simulado): ", "");
+        document.getElementById('rsaOutput').textContent = "Mensaje descifrado: " + atob(result);
+      } catch(e) {
+        alert("Error al descifrar RSA.");
+      }
+    }
+    function signRSA() {
+      const message = document.getElementById('rsaMessage').value;
+      document.getElementById('rsaOutput').textContent = "Firma (simulada): " + btoa("firma_" + message);
+    }
+    function verifyRSA() {
+      document.getElementById('rsaOutput').textContent = "Firma verificada (simulación).";
+    }
+    function showRSAMath() {
+      showExplanation('rsaMath');
+    }
+
+    // Diffie-Hellman funciones simuladas
+    function performDHExchange() {
+      const alice = parseInt(document.getElementById('dhAlicePrivate').value);
+      const bob = parseInt(document.getElementById('dhBobPrivate').value);
+      const p = parseInt(document.getElementById('dhP').textContent);
+      const g = parseInt(document.getElementById('dhG').textContent);
+      const alicePub = (g ** alice) % p;
+      const bobPub = (g ** bob) % p;
+      const aliceSecret = (bobPub ** alice) % p;
+      const bobSecret = (alicePub ** bob) % p;
+      document.getElementById('dhOutput').textContent = `Clave pública de Alice: ${alicePub}\nClave pública de Bob: ${bobPub}\nClave secreta (Alice): ${aliceSecret}\nClave secreta (Bob): ${bobSecret}`;
+    }
+    function randomizeDH() {
+      document.getElementById('dhAlicePrivate').value = Math.floor(Math.random() * 22) + 1;
+      document.getElementById('dhBobPrivate').value = Math.floor(Math.random() * 22) + 1;
+    }
+
+    // Hash y HMAC funciones simuladas
+    function calculateHash() {
+      const input = document.getElementById('hashInput').value;
+      const algo = document.querySelector('.algorithm-option.selected').getAttribute('data-hash');
+      const result = btoa(input + algo);
+      document.getElementById('hashOutput').textContent = result;
+    }
+    function compareHashes() {
+      document.getElementById('hashOutput').textContent = "Comparación de hashes (simulada).";
+    }
+    function demonstrateAvalanche() {
+      document.getElementById('hashOutput').textContent = "Demostración del efecto avalancha (simulada).";
+    }
+    function hashFile(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        document.getElementById('hashOutput').textContent = btoa(content);
+      }
+      reader.readAsBinaryString(file);
+    }
+    function calculateHMAC() {
+      const message = document.getElementById('hmacMessage').value;
+      const key = document.getElementById('hmacKey').value;
+      const algo = document.querySelector('.algorithm-option.selected').getAttribute('data-hmac');
+      document.getElementById('hmacOutput').textContent = btoa(message + key + algo);
+    }
+    function verifyHMAC() {
+      document.getElementById('hmacOutput').textContent = "Verificación HMAC (simulada).";
+    }
+
+    // Contraseñas
+    function analyzePassword() {
+      const pwd = document.getElementById('passwordInput').value;
+      const length = pwd.length;
+      // Simulación de bits de entropía y puntuación
+      const entropy = length * 4;
+      const score = Math.min(entropy, 100);
+      document.getElementById('passwordLength').textContent = length;
+      document.getElementById('passwordEntropy').textContent = entropy;
+      document.getElementById('crackTime').textContent = (entropy > 40 ? "Difícil" : "Fácil");
+      document.getElementById('passwordScore').textContent = score + "/100";
+      document.getElementById('passwordStrength').style.width = score + "%";
+      // Actualizar barras de fortaleza (simple simulación)
+      let bars = document.getElementById('strengthBars').children;
+      for(let i=0; i<bars.length; i++){
+        if(i < score/20) {
+          bars[i].classList.add("active");
+        } else {
+          bars[i].classList.remove("active");
+        }
+      }
+      document.getElementById('passwordAnalysis').textContent = "Análisis: Contraseña de " + length + " caracteres con " + entropy + " bits de entropía.";
+    }
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('passwordInput');
+      pwdInput.type = pwdInput.type === "password" ? "text" : "password";
+    }
+    function generateSecurePassword() {
+      const pwd = Math.random().toString(36).slice(-8) + "!A1";
+      document.getElementById('passwordInput').value = pwd;
+      analyzePassword();
+    }
+    function checkCommonPasswords() {
+      document.getElementById('passwordAnalysis').textContent = "Verificación: La contraseña no se encuentra en la lista de contraseñas comunes (simulado).";
+    }
+
+    // Ataque Fuerza Bruta (simulado)
+    let bruteAttempts = 0;
+    bruteInterval = setInterval(() => {
+        bruteAttempts += Math.floor(speed / 10); // calcula "aprox" intentos cada 100ms
+        const progressPercent = Math.min(100, bruteAttempts / 1000); // simulado
+        document.getElementById('bruteForceProgress').style.width = progressPercent + "%";
+        document.getElementById('bruteForceOutput').textContent += `Intento #${bruteAttempts}\n`;
+
+        if (bruteAttempts % 10 === 0) {  // solo imprimir cada 10 ciclos
+            document.getElementById('bruteForceOutput').textContent += `Intento #${bruteAttempts}\n`;
+        }
+    }, 100); // 000 / speed);
+    
+    function stopBruteForce() {
+      clearInterval(bruteInterval);
+      document.getElementById('bruteForceOutput').textContent += "Ataque detenido.";
+    }
+
+    // Esteganografía (funciones básicas simuladas)
+    let stegoImage = null;
+    function loadStegoImage(event) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        stegoImage = new Image();
+        stegoImage.onload = function() {
+          // Dibujar imagen en canvas (oculto)
+          const canvas = document.getElementById('stegoCanvas');
+          canvas.width = stegoImage.width;
+          canvas.height = stegoImage.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(stegoImage, 0, 0);
+          document.getElementById('stegoOutput').textContent = "Imagen cargada correctamente.";
+        }
+        stegoImage.src = e.target.result;
+      }
+      reader.readAsDataURL(event.target.files[0]);
+    }
+    function hideMessageInImage() {
+      if (!stegoImage) { 
+        alert("Carga primero una imagen.");
+        return;
+      }
+      const message = document.getElementById('stegoMessage').value;
+      // Aquí se insertaría un algoritmo LSB para ocultar el mensaje
+      document.getElementById('stegoOutput').textContent = "Mensaje ocultado en la imagen (simulado).";
+    }
+    function extractMessageFromImage() {
+      // Simulación de extracción
+      document.getElementById('stegoOutput').textContent = "Mensaje extraído: Mensaje secreto oculto (simulado).";
+    }
+
+    // Certificados Digitales (simulación)
+    function generateCertificate() {
+      const issuer = document.getElementById('certIssuer').value || "Emisor Ejemplo";
+      const subject = document.getElementById('certSubject').value || "Sujeto Ejemplo";
+      const validity = parseInt(document.getElementById('certValidity').value);
+      const issueDate = new Date();
+      const expireDate = new Date(issueDate.getTime() + validity*24*60*60*1000);
+      const certificate = {
+        issuer: issuer,
+        subject: subject,
+        issued: issueDate.toLocaleDateString(),
+        expires: expireDate.toLocaleDateString(),
+        serial: Math.floor(Math.random()*1000000)
+      };
+      document.getElementById('certOutput').textContent = "Certificado generado:\n" + JSON.stringify(certificate, null, 2);
+    }
+
+    // Función para exportar el contenido de un output a un archivo txt
+    function exportResult(outputId) {
+      const content = document.getElementById(outputId).textContent;
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = outputId + "_resultado.txt";
+      link.click();
+    }
+
+    // Función para mostrar modales de explicación
+    function showExplanation(topic) {
+      let content = "";
+      switch(topic) {
+        case "aes":
+          content = "<h3>Explicación de AES</h3><p>AES es un algoritmo de cifrado simétrico que opera sobre bloques de 128 bits utilizando claves de 128, 192 o 256 bits. Emplea una serie de transformaciones (SubBytes, ShiftRows, MixColumns y AddRoundKey) para asegurar el mensaje.</p>";
+          break;
+        case "stream":
+          content = "<h3>Explicación del Cifrado de Flujo</h3><p>El cifrado de flujo cifra datos bit a bit o byte a byte, generando una secuencia pseudoaleatoria que se combina con el mensaje original, generalmente mediante XOR.</p>";
+          break;
+        case "dh":
+          content = "<h3>Explicación de Diffie-Hellman</h3><p>Diffie-Hellman es un método de intercambio de claves que permite a dos partes generar una clave secreta compartida utilizando un generador y un primo público, combinando valores privados.</p>";
+          break;
+        case "hash":
+          content = "<h3>Explicación de Funciones Hash</h3><p>Una función hash toma una entrada (mensaje) y produce una salida de longitud fija. Son unidireccionales y tienen el efecto avalancha, donde cambios pequeños en el mensaje producen grandes cambios en el resultado.</p>";
+          break;
+        case "hmac":
+          content = "<h3>Explicación de HMAC</h3><p>HMAC utiliza una función hash y una clave secreta para producir un código de autenticación, garantizando la integridad y autenticidad del mensaje.</p>";
+          break;
+        case "password":
+          content = "<h3>Explicación del Análisis de Contraseñas</h3><p>El análisis de contraseñas evalúa la longitud, la entropía y la complejidad para determinar la seguridad y la resistencia a ataques de fuerza bruta.</p>";
+          break;
+        case "brute":
+          content = "<h3>Explicación del Ataque de Fuerza Bruta</h3><p>El ataque de fuerza bruta prueba todas las combinaciones posibles para descifrar una contraseña. Su efectividad depende de la longitud y complejidad del password.</p>";
+          break;
+        case "stego":
+          content = "<h3>Explicación de Esteganografía</h3><p>La esteganografía oculta información dentro de archivos multimedia, como imágenes, sin alterar notablemente el contenido visual.</p>";
+          break;
+        case "cert":
+          content = "<h3>Explicación de Certificados Digitales</h3><p>Los certificados digitales utilizan criptografía asimétrica para validar la identidad de una entidad, asegurando integridad, autenticidad y confidencialidad en las comunicaciones.</p>";
+          break;
+        case "rsaMath":
+          content = "<h3>Matemáticas detrás de RSA</h3><p>RSA se basa en la dificultad de factorizar números primos grandes. Utiliza una clave pública (n, e) y una clave privada (n, d) para cifrar y descifrar información.</p>";
+          break;
+        default:
+          content = "<p>No hay explicación disponible.</p>";
+      }
+      document.getElementById("explanationContent").innerHTML = content;
+      document.getElementById("explanationModal").classList.add("active");
+    }
+    function closeExplanation() {
+      document.getElementById("explanationModal").classList.remove("active");
+    }
+
+    // Opcional: Función para actualizar monitor de desempeño (simulación)
+    function updatePerformance() {
+      document.getElementById('cpuUsage').textContent = Math.floor(Math.random() * 100) + "%";
+      document.getElementById('memUsage').textContent = Math.floor(Math.random() * 500) + "MB";
+      document.getElementById('opsPerSec').textContent = Math.floor(Math.random() * 10000);
+    }
+    setInterval(updatePerformance, 2000);
+  </script>
+</body>
+</html>
